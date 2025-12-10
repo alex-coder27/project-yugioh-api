@@ -1,0 +1,16 @@
+# Ignora pastas de dependência em ambos os subdiretórios
+node_modules/
+
+# Ignora logs e arquivos de build do sistema
+dist
+build
+temp
+logs
+*.log
+
+# Variáveis de ambiente
+.env
+.env.local
+
+# Arquivos de IDE (VS Code)
+.vscode/

@@ -1,0 +1,55 @@
+@import url('https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap');
+
+:root {
+    --color-background: #f7f7f7; 
+    --color-card-bg: #ffffff; 
+    --color-text-main: #111111;
+    --color-text-secondary: #555555;
+    --color-border: #cccccc; 
+    --color-input-bg: #eeeeee;
+    --color-primary: #008cff;
+    --color-button-hover: #0077e6;
+    --color-glow-dark: rgba(0, 140, 255, 0.7);
+}
+
+body.dark-mode {
+    --color-background: #111111; 
+    --color-card-bg: #222222; 
+    --color-text-main: #ffffff;
+    --color-text-secondary: #aaaaaa;
+    --color-border: #444444; 
+    --color-input-bg: #1a1a1a;
+    --color-primary: #ff0000;
+    --color-button-hover: #cc0000;
+    --color-glow-dark: rgba(255, 0, 0, 0.9);
+}
+
+html, body {
+    width: 100%;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text-main);
+    
+    min-height: 100vh;
+    overflow-y: auto; 
+    overflow-x: hidden;
+    
+    transition: background-color 0.5s, color 0.5s;
+    font-family: 'Roboto', sans-serif;
+    
+    background-image: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M10 0 L20 10 L10 20 L0 10 Z" fill="none" stroke="rgba(0, 140, 255, 0.2)" stroke-width="1.5"/></pattern></defs><rect width="100" height="100" fill="url(%23g)"/></svg>');
+    background-size: 50px 50px;
+    background-attachment: fixed;
+}
+
+body.dark-mode {
+    background-image: 
+        url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100"><defs><pattern id="g" width="20" height="20" patternUnits="userSpaceOnUse"><path d="M10 0 L20 10 L10 20 L0 10 Z" fill="none" stroke="rgba(255, 0, 0, 0.25)" stroke-width="1.5"/></pattern></defs><rect width="100" height="100" fill="url(%23g)"/></svg>');
+    background-size: 50px 50px;
+    background-attachment: fixed;
+}

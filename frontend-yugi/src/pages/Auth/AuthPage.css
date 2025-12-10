@@ -1,0 +1,211 @@
+.auth-page-wrapper {
+    position: relative;
+    width: 100%;
+    min-height: 100vh;
+    padding-bottom: 50px; 
+    box-sizing: border-box; 
+}
+
+.duelist-container {
+    position: absolute;
+    
+    top: 50%; 
+    left: 50%;
+    transform: translate(-50%, -50%); 
+    
+    max-width: 400px; 
+    width: calc(100% - 60px); 
+    padding: 30px; 
+    box-sizing: border-box; 
+    
+    background-color: var(--color-card-bg);
+    border: 3px solid var(--color-primary);
+    border-radius: 10px;
+    text-align: center;
+    transition: background-color 0.5s, border-color 0.5s, box-shadow 0.5s;
+    
+    box-shadow: 
+        0 0 15px var(--color-glow-dark), 
+        0 0 30px var(--color-glow-dark), 
+        0 0 60px var(--color-glow-dark);
+        
+    margin: 0;
+}
+
+body:not(.dark-mode) .duelist-container {
+    box-shadow: 
+        0 0 15px var(--color-glow-dark), 
+        0 0 30px var(--color-glow-dark), 
+        0 0 60px var(--color-glow-dark);
+}
+
+.theme-toggle {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 45px; 
+    height: 45px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    cursor: pointer;
+    border: 2px solid var(--color-primary);
+    border-radius: 50%;
+    background-color: var(--color-card-bg);
+    color: var(--color-primary);
+    font-size: 1.5em;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+    transition: all 0.3s ease-in-out;
+    z-index: 100;
+}
+
+.theme-toggle:hover {
+    color: var(--color-card-bg);
+    background-color: var(--color-primary);
+    transform: scale(1.1);
+    box-shadow: 0 0 15px var(--color-primary); 
+}
+
+.card-switcher {
+    display: flex;
+    margin-bottom: 20px;
+    border: 1px solid var(--color-border);
+    border-radius: 5px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.card-switcher button {
+    flex-grow: 1;
+    padding: 10px 0;
+    font-size: 1em;
+    font-weight: 700;
+    cursor: pointer;
+    border: none;
+    background-color: var(--color-card-bg);
+    color: var(--color-text-secondary);
+    transition: background-color 0.3s, color 0.3s;
+}
+
+.card-switcher button.active {
+    background-color: var(--color-primary);
+    color: var(--color-card-bg);
+}
+
+.duelist-card {
+    padding: 20px 0 10px 0;
+    transition: opacity 0.4s ease-in-out, transform 0.4s ease-in-out;
+}
+
+.hidden-form {
+    display: none;
+    opacity: 0;
+    transform: translateY(20px);
+}
+
+.active-form {
+    display: block;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.duelist-card h2 {
+    font-size: 1.8em;
+    margin-bottom: 20px;
+    color: var(--color-primary);
+    transition: color 0.5s;
+}
+
+.input-group {
+    text-align: left;
+    margin-bottom: 15px;
+}
+
+.input-group label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: 700;
+    color: var(--color-text-main);
+    text-transform: uppercase;
+    font-size: 0.9em;
+}
+
+.input-group input {
+    width: 100%;
+    padding: 12px;
+    border: 2px solid var(--color-border);
+    border-radius: 5px;
+    background-color: var(--color-input-bg);
+    color: var(--color-text-main);
+    font-size: 1em;
+    transition: border-color 0.3s, background-color 0.5s;
+    box-sizing: border-box; 
+}
+
+.input-group input:focus {
+    border-color: var(--color-primary);
+    outline: none;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5); 
+}
+
+.duelist-button {
+    width: 100%;
+    padding: 15px;
+    border: none;
+    border-radius: 5px;
+    font-size: 1.1em;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
+}
+
+.duelist-button.primary {
+    background-color: var(--color-primary);
+    color: var(--color-card-bg); 
+}
+
+.duelist-button.primary:hover {
+    background-color: var(--color-button-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.5);
+}
+
+.forgot-link {
+    display: block;
+    margin-top: 15px;
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    font-size: 0.9em;
+    transition: color 0.3s;
+}
+
+.forgot-link:hover {
+    color: var(--color-primary);
+}
+
+@media (min-width: 1024px) {
+    .duelist-container {
+        max-width: 550px; 
+        padding: 40px; 
+    }
+}
+
+@media (max-width: 450px) {
+    .duelist-container {
+        top: 50px;
+        transform: translateX(-50%);
+        
+        width: calc(100% - 30px); 
+        padding: 30px 15px; 
+    }
+    
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px; 
+        height: 40px;
+        font-size: 1.3em;
+    }
+}
