@@ -1,34 +1,32 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import { AuthProvider, useAuth } from './hooks/useAuth.tsx';
-import { ThemeProvider } from './hooks/useTheme.tsx';
+import { useAuth, AuthProvider } from './hooks/useAuth';
+import { ThemeProvider } from './hooks/useTheme';
 
-import AuthPage from './pages/Auth/AuthPage.tsx'; 
-import DashboardPage from './pages/Dashboard/DashboardPage.tsx'; 
+import AuthPage from './pages/Auth/AuthPage';
+import DashboardPage from './pages/Dashboard/DashboardPage';
+import CreateDeckPage from './pages/CreateDeck/CreateDeckPage';
+
 import './index.css';
 
-const ProtectedRoute: React.FC<{ children: React.ReactNode }> = ({ children }) => {
-    const { isAuthenticated, loading } = useAuth();
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
 
-    if (loading) {
-        return <div style={{ 
-            minHeight: '100vh', 
-            display: 'flex', 
-            justifyContent: 'center', 
-            alignItems: 'center',
-            backgroundColor: '#1a1a1a', 
-            color: 'white'
-        }}>Carregando Duelista...</div>; 
-    }
+const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
+  const { isAuthenticated, loading } = useAuth();
 
-    if (!isAuthenticated) {
-        return <Navigate to="/login" replace />;
-    }
+  if (loading) {
+    return <div>Carregando...</div>;
+  }
 
-    return children;
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  return <>{children}</>;
 };
-
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
@@ -38,18 +36,23 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
           <Routes>
             <Route path="/login" element={<AuthPage />} />
             <Route path="/register" element={<AuthPage />} />
-            
-            <Route 
-                path="/" 
-                element={
-                    <ProtectedRoute>
-                        <DashboardPage /> 
-                    </ProtectedRoute>
-                } 
+            <Route
+              path="/"
+              element={
+                <ProtectedRoute>
+                  <DashboardPage />
+                </ProtectedRoute>
+              }
             />
-            
+            <Route
+              path="/deck/create"
+              element={
+                <ProtectedRoute>
+                  <CreateDeckPage />
+                </ProtectedRoute>
+              }
+            />
             <Route path="*" element={<Navigate to="/" replace />} />
-            
           </Routes>
         </BrowserRouter>
       </AuthProvider>
