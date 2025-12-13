@@ -7,7 +7,7 @@ const CardImageSchema = z.object({
 });
 
 const BanlistInfoSchema = z.object({
-    ban_tcg: z.enum(['Limited', 'Semi-Limited', 'Forbidden', 'Unlimited', '']), 
+    ban_tcg: z.enum(['Limited', 'Semi-Limited', 'Forbidden', 'Unlimited', '']),
 }).partial();
 
 export interface SimplifiedCard {
@@ -17,10 +17,11 @@ export interface SimplifiedCard {
     desc: string;
     card_images: z.infer<typeof CardImageSchema>[];
     banlist_info?: z.infer<typeof BanlistInfoSchema>;
-    attribute?: string; 
+    attribute?: string;
     race?: string;
     level?: number | string | null;
     atk?: number | string | null;
+    def?: number | string | null;
 }
 
 export const SimplifiedCardSchema = z.object({
@@ -32,8 +33,9 @@ export const SimplifiedCardSchema = z.object({
     banlist_info: BanlistInfoSchema.optional(),
     attribute: z.string().optional(),
     race: z.string().optional(),
-    level: z.union([z.number(), z.string().nullable()]).optional(), 
-    atk: z.union([z.number(), z.string().nullable()]).optional(), 
+    level: z.union([z.number(), z.string().nullable()]).optional(),
+    atk: z.union([z.number(), z.string().nullable()]).optional(),
+    def: z.union([z.number(), z.string().nullable()]).optional(),
 }).passthrough();
 
 export const YgoProDeckResponseSchema = z.object({
@@ -43,7 +45,7 @@ export const YgoProDeckResponseSchema = z.object({
 const emptyStringToUndefined = (val: any) => (val === '' ? undefined : val as string | undefined);
 
 export const CardQueryDTO = z.object({
-    fname: z.string().trim().optional().default(''), 
+    fname: z.string().trim().optional().default(''),
     
     type: z.string().optional().transform(emptyStringToUndefined),
     attribute: z.string().optional().transform(emptyStringToUndefined),
@@ -56,6 +58,9 @@ export const CardQueryDTO = z.object({
         }),
         
     atk: z.string().optional()
+        .transform(emptyStringToUndefined),
+
+    def: z.string().optional()
         .transform(emptyStringToUndefined),
 
     offset: z.string().optional().default('0').refine(val => /^\d+$/.test(val), {

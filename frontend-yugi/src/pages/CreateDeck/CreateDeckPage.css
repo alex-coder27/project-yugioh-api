@@ -117,7 +117,6 @@
     box-shadow: 0 4px 12px rgba(var(--color-primary-rgb, 0, 140, 255), 0.3);
 }
 
-/* Layout principal com painel lateral */
 .deck-builder-main-layout {
     display: flex;
     gap: 20px;
@@ -294,6 +293,13 @@ input:checked+.slider:before {
     object-fit: cover;
     display: block;
     border-bottom: 1px solid var(--color-border);
+}
+
+.card-stats {
+    font-size: 12px;
+    color: #666;
+    margin-top: 4px;
+    font-weight: bold;
 }
 
 .banlist-tag {
@@ -771,7 +777,42 @@ input:checked+.slider:before {
     border-radius: 3px;
 }
 
-/* Responsividade */
+.refresh-button {
+    padding: 6px 12px;
+    background-color: var(--color-primary);
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 0.9em;
+    transition: background-color 0.3s, transform 0.2s;
+}
+
+.refresh-button:hover {
+    background-color: var(--color-button-hover);
+    transform: translateY(-1px);
+}
+
+.message-container {
+    text-align: center;
+    padding: 30px;
+}
+
+.error-with-button-container {
+    text-align: center;
+    margin-top: 15px;
+}
+
+.search-input-with-icon {
+    position: relative;
+    flex: 1 1 250px;
+}
+
+.search-input-with-icon input {
+    padding-right: 40px;
+}
+
+
 @media (max-width: 1024px) {
     .deck-builder-main-layout {
         flex-direction: column;
@@ -928,3 +969,4 @@ input:checked+.slider:before {
         font-size: 1.2em;
     }
 }
+
