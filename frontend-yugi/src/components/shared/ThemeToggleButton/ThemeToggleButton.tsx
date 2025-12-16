@@ -2,8 +2,11 @@ import React from 'react';
 import { useTheme } from '../../../hooks/useTheme';
 import styles from './ThemeToggleButton.module.css';
 
+import dragaoBranco from '../../../assets/icons/Icone_Dragao_Branco.png';
+import dragaoNegro from '../../../assets/icons/Icone_Dragao_Negro.png';
+
 interface ThemeToggleButtonProps {
-  variant?: 'fixed' | 'headerFixed' | 'headerInline' | 'headerFixed';
+  variant?: 'fixed' | 'headerFixed' | 'headerInline' | 'inline';
 }
 
 const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({ 
@@ -19,7 +22,11 @@ const ThemeToggleButton: React.FC<ThemeToggleButtonProps> = ({
       className={buttonClass}
       aria-label={`Mudar para tema ${theme === 'light' ? 'escuro' : 'claro'}`}
     >
-      {theme === 'light' ? '🌙' : '☀️'}
+      <img 
+        src={theme === 'light' ? dragaoBranco : dragaoNegro} 
+        alt={theme === 'light' ? 'Dragão Branco' : 'Dragão Negro'}
+        className={styles.iconImage}
+      />
     </button>
   );
 };
