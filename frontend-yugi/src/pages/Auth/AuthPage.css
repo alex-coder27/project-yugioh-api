@@ -39,33 +39,6 @@ body:not(.dark-mode) .duelist-container {
         0 0 60px var(--color-glow-dark);
 }
 
-.theme-toggle {
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    width: 45px; 
-    height: 45px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    cursor: pointer;
-    border: 2px solid var(--color-primary);
-    border-radius: 50%;
-    background-color: var(--color-card-bg);
-    color: var(--color-primary);
-    font-size: 1.5em;
-    box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
-    transition: all 0.3s ease-in-out;
-    z-index: 100;
-}
-
-.theme-toggle:hover {
-    color: var(--color-card-bg);
-    background-color: var(--color-primary);
-    transform: scale(1.1);
-    box-shadow: 0 0 15px var(--color-primary); 
-}
-
 .card-switcher {
     display: flex;
     margin-bottom: 20px;

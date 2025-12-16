@@ -1,4 +1,3 @@
-// src/components/deck-builder/DeckViewSection.tsx
 import React from 'react';
 import type { DeckCardItem } from './utils';
 import DeckCardGrid from './DeckCardGrid';

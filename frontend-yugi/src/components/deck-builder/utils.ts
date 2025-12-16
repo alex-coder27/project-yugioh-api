@@ -20,9 +20,10 @@ export interface Card {
     };
     attribute?: string;
     race?: string;
+    archetype?: string; 
     level?: number | string | null;
     atk?: number | string | null;
-    def?: number | string | null; // JÁ EXISTE
+    def?: number | string | null;
 }
 
 export interface DeckCardItem extends Card {
@@ -36,7 +37,7 @@ export interface CardQueryInput {
     race?: string;
     level?: string;
     atk?: string;
-    def?: string; // ADICIONADO
+    def?: string;
     offset: string;
     num: string;
 }
@@ -138,7 +139,6 @@ export const ATK_FILTERS = [
     { value: '3000', label: 'ATK: ≥ 3000' }
 ];
 
-// ADICIONADO: Filtros de DEF
 export const DEF_FILTERS = [
     { value: '', label: 'DEF' },
     { value: 'asc', label: 'DEF: Menor para Maior' },

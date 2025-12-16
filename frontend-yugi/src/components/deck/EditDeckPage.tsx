@@ -1,7 +1,7 @@
 import React, { useState, useCallback, useMemo, useEffect, useRef, type ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import api from '../../services/api';
-import './CreateDeckPage.css';
+import '../../pages/CreateDeck/CreateDeckPage.css';
 
 import DeckHeader from '../../components/deck-builder/DeckHeader';
 import TabNavigation from '../../components/deck-builder/TabNavigation';
@@ -32,9 +32,26 @@ const CACHE_TTL = 2 * 60 * 1000;
 const SHORT_CACHE_TTL = 30 * 1000;
 const MIN_TIME_BETWEEN_SAME_SEARCH = 5000;
 
-const CreateDeckPage: React.FC = () => {
+interface DeckCard {
+    cardApiId: number;
+    copies: number;
+}
+
+interface Deck {
+    id: number;
+    name: string;
+    userId: number;
+    cards: DeckCard[];
+}
+
+const EditDeckPage: React.FC = () => {
+    const { id } = useParams<{ id: string }>();
     const navigate = useNavigate();
-    const [deckName, setDeckName] = useState('Novo Deck');
+
+    const [deckName, setDeckName] = useState('');
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+
     const [searchTerm, setSearchTerm] = useState('');
     const [cards, setCards] = useState<Card[]>([]);
     const [mainDeckCards, setMainDeckCards] = useState<DeckCardItem[]>([]);
@@ -61,7 +78,104 @@ const CreateDeckPage: React.FC = () => {
     const searchTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
     const hoverTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-    const handleDeckNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
+    useEffect(() => {
+        const loadDeck = async () => {
+            try {
+                setLoading(true);
+                const response = await api.get(`/decks/${id}`);
+                const deck: Deck = response.data.deck;
+
+                setDeckName(deck.name);
+
+                const uniqueDeckCardIds = (deck.cards || [])
+                    .map(deckCard => deckCard.cardApiId)
+                    .filter((id, index, self) => self.indexOf(id) === index);
+
+                const mainDeck: DeckCardItem[] = [];
+                const extraDeck: DeckCardItem[] = [];
+                const cardMap = new Map<number, Card>();
+
+                if (uniqueDeckCardIds.length > 0) {
+                    let fetchedCards: Card[] = [];
+                    let missingCardIds: number[] = [...uniqueDeckCardIds];
+
+                    try {
+                        const cardsResponse = await api.get('/cards', {
+                            params: {
+                                id: uniqueDeckCardIds.join(','),
+                            }
+                        });
+                        fetchedCards = cardsResponse.data || [];
+
+                        fetchedCards.forEach(card => {
+                            cardMap.set(card.id, card);
+                            missingCardIds = missingCardIds.filter(mid => mid !== card.id);
+                        });
+
+                    } catch (bulkError: any) {
+                    }
+
+                    const individualFetchPromises = missingCardIds.map(cardId => {
+                        return api.get('/cards', { params: { id: cardId } })
+                            .then(res => {
+                                return res.data[0];
+                            })
+                            .catch(_ => {
+                                return null;
+                            });
+                    });
+
+                    const individuallyFetchedCards = await Promise.all(individualFetchPromises);
+
+                    individuallyFetchedCards.forEach(card => {
+                        if (card && card.id) {
+                            cardMap.set(card.id, card);
+                        }
+                    });
+
+                    for (const deckCard of deck.cards) {
+                        const foundCard = cardMap.get(deckCard.cardApiId);
+
+                        if (foundCard) {
+                            const cardItem: DeckCardItem = {
+                                ...foundCard,
+                                count: deckCard.copies
+                            };
+
+                            if (isExtraDeckCard(cardItem)) {
+                                extraDeck.push(cardItem);
+                            } else {
+                                mainDeck.push(cardItem);
+                            }
+                        } else {
+                            mainDeck.push({
+                                id: deckCard.cardApiId,
+                                name: `Carta #${deckCard.cardApiId} (Não Carregada)`,
+                                type: 'Desconhecido',
+                                desc: 'Não foi possível carregar esta carta',
+                                count: deckCard.copies,
+                                card_images: [],
+                            } as DeckCardItem);
+                        }
+                    }
+                }
+
+                setMainDeckCards(mainDeck);
+                setExtraDeckCards(extraDeck);
+
+            } catch (error: any) {
+                setError('Erro ao carregar o deck.');
+            } finally {
+                setLoading(false);
+            }
+        };
+
+        if (id) {
+            loadDeck();
+        }
+    }, [id]);
+
+    const handleNameChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
         setDeckName(e.target.value);
     }, []);
 
@@ -169,18 +283,13 @@ const CreateDeckPage: React.FC = () => {
 
     const shouldMakeRequest = useCallback((searchText: string): boolean => {
         const hasSearchTerm = searchText.trim().length > 0;
-
         if (hasSearchTerm) {
             return searchText.trim().length >= 3;
         }
-
-        const hasOtherFilters = !!selectedType || !!selectedAttribute || !!selectedRace ||
-            !!levelSearch || !!atkSearch || !!defSearch;
-
+        const hasOtherFilters = !!selectedType || !!selectedAttribute || !!selectedRace || !!levelSearch || !!atkSearch || !!defSearch;
         if (hasOtherFilters) {
             return true;
         }
-
         return true;
     }, [selectedType, selectedAttribute, selectedRace, levelSearch, atkSearch, defSearch]);
 
@@ -194,7 +303,6 @@ const CreateDeckPage: React.FC = () => {
 
         if (cacheKey === lastSearchKeyRef.current) {
             const timeSinceLastSearch = now - lastSearchTimeRef.current;
-
             if (timeSinceLastSearch < MIN_TIME_BETWEEN_SAME_SEARCH) {
                 return false;
             }
@@ -204,12 +312,10 @@ const CreateDeckPage: React.FC = () => {
         if (cached) {
             const cacheAge = now - cached.timestamp;
             const cacheTTL = cached.searchCount > 3 ? SHORT_CACHE_TTL : CACHE_TTL;
-
             if (cacheAge < cacheTTL) {
                 return false;
             }
         }
-
         return true;
     }, [searchTerm, selectedType, selectedAttribute, selectedRace, levelSearch, atkSearch, defSearch, page, generateCacheKey, shouldMakeRequest]);
 
@@ -225,7 +331,6 @@ const CreateDeckPage: React.FC = () => {
         if (!shouldFetchCards()) {
             const cacheKey = generateCacheKey();
             const cached = searchCacheRef.current.get(cacheKey);
-
             if (cached && cached.data.length > 0 && isMountedRef.current) {
                 setCards(cached.data);
                 setFetchError(null);
@@ -236,7 +341,6 @@ const CreateDeckPage: React.FC = () => {
         if (abortControllerRef.current) {
             abortControllerRef.current.abort();
         }
-
         const abortController = new AbortController();
         abortControllerRef.current = abortController;
 
@@ -279,10 +383,8 @@ const CreateDeckPage: React.FC = () => {
 
         const queryParams = getFilteredQueryParams(baseQueryParams);
 
-        const hasValidParams = Object.keys(queryParams).some(key =>
-            key !== 'offset' && key !== 'num' && queryParams[key] !== undefined
-        );
-
+        const hasValidParams = Object.keys(queryParams).some(key => key !== 'offset' && key !== 'num' && queryParams[key] !== undefined );
+        
         if (!hasValidParams && !searchTerm.trim()) {
             queryParams.offset = String(page * PAGE_SIZE);
             queryParams.num = String(PAGE_SIZE);
@@ -325,8 +427,8 @@ const CreateDeckPage: React.FC = () => {
 
             if (isMountedRef.current) {
                 setCards(fetchedCards);
+                setFetchError(null);
             }
-
         } catch (error: any) {
             if (error.name === 'AbortError' || error.name === 'CanceledError' || error.code === 'ERR_CANCELED') {
                 return;
@@ -355,15 +457,13 @@ const CreateDeckPage: React.FC = () => {
                     setCards([]);
                 }
             }
-
-            console.warn('Erro na busca de cartas:', error.message);
-
         } finally {
             if (isMountedRef.current) {
                 setIsLoading(false);
             }
+            abortControllerRef.current = null;
         }
-    }, [searchTerm, selectedType, selectedAttribute, selectedRace, levelSearch, atkSearch, defSearch, page, shouldFetchCards, generateCacheKey, shouldMakeRequest, getFilteredQueryParams]);
+    }, [searchTerm, selectedType, selectedAttribute, selectedRace, levelSearch, atkSearch, defSearch, page, generateCacheKey, shouldMakeRequest, shouldFetchCards, getFilteredQueryParams]);
 
     useEffect(() => {
         if (searchTimeoutRef.current) {
@@ -379,7 +479,6 @@ const CreateDeckPage: React.FC = () => {
                 setCards([]);
                 setFetchError(null);
             }
-
             return;
         }
 
@@ -418,85 +517,95 @@ const CreateDeckPage: React.FC = () => {
             }
         };
     }, [fetchCards, generateCacheKey, searchTerm, selectedType, selectedAttribute, selectedRace, levelSearch, atkSearch, defSearch, shouldMakeRequest]);
-
+    
     useEffect(() => {
         isMountedRef.current = true;
-
-        const initialTimer = setTimeout(() => {
-            if (isMountedRef.current && cards.length === 0 && !isLoading && !fetchError) {
-                fetchCards();
-            }
-        }, 500);
-
         return () => {
             isMountedRef.current = false;
-
-            if (searchTimeoutRef.current) {
-                clearTimeout(searchTimeoutRef.current);
-            }
-            if (hoverTimeoutRef.current) {
-                clearTimeout(hoverTimeoutRef.current);
-            }
-            if (initialTimer) {
-                clearTimeout(initialTimer);
-            }
-
-            if (abortControllerRef.current) {
-                abortControllerRef.current.abort();
-            }
         };
     }, []);
 
-    const handleSearchChange = useCallback((e: ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchTerm(value);
+    const handleSearchTermChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchTerm(e.target.value);
         setPage(0);
-    }, [selectedType, selectedAttribute, selectedRace, levelSearch, atkSearch, defSearch]);
+    };
 
-    const handleTypeChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setSelectedType(value);
+    const handleSelectType = (e: ChangeEvent<HTMLSelectElement>) => {
+        setSelectedType(e.target.value);
         setPage(0);
-    }, []);
+    };
 
-    const handleSubtypeChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setSelectedRace(value);
-        setPage(0);
-    }, []);
-
-    const handleAttributeChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectAttribute = (e: ChangeEvent<HTMLSelectElement>) => {
         setSelectedAttribute(e.target.value);
         setPage(0);
-    }, []);
+    };
 
-    const handleLevelChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    const handleSelectRace = (e: ChangeEvent<HTMLSelectElement>) => {
+        setSelectedRace(e.target.value);
+        setPage(0);
+    };
+
+    const handleLevelSearch = (e: ChangeEvent<HTMLSelectElement>) => {
         setLevelSearch(e.target.value);
         setPage(0);
-    }, []);
+    };
 
-    const handleAtkChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    const handleAtkSearch = (e: ChangeEvent<HTMLSelectElement>) => {
         setAtkSearch(e.target.value);
         setPage(0);
-    }, []);
+    };
 
-    const handleDefChange = useCallback((e: ChangeEvent<HTMLSelectElement>) => {
+    const handleDefSearch = (e: ChangeEvent<HTMLSelectElement>) => {
         setDefSearch(e.target.value);
         setPage(0);
-    }, []);
+    };
 
-    const handleBanishedToggle = useCallback(() => {
+    const handleToggleBanished = () => {
         setIncludeBanishedCards(prev => !prev);
+    };
+
+    const handleCardClickForDetails = (card: Card) => {
+        setSelectedCard(card);
+    };
+
+    const handleCardHover = (card: Card) => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+        }
+        hoverTimeoutRef.current = setTimeout(() => {
+            setSelectedCard(card);
+        }, 500);
+    };
+
+    const handleCardLeave = () => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+        }
+    };
+
+    const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement, Event>) => {
+        e.currentTarget.src = 'https://i.imgur.com/kS9eCgP.png';
+        e.currentTarget.onerror = null;
     }, []);
 
-    const handleNextPage = useCallback(() => {
-        if (cards.length === PAGE_SIZE) {
-            setPage(prev => prev + 1);
-        }
-    }, [cards.length]);
+    const handleRetry = () => {
+        fetchCards();
+    };
 
-    const handlePrevPage = useCallback(() => {
+    const handlePrevPage = () => {
         setPage(prev => Math.max(0, prev - 1));
+    };
+
+    const handleNextPage = () => {
+        setPage(prev => prev + 1);
+    };
+
+    const handleRemoveCard = useCallback((cardId: number, isExtra: boolean) => {
+        removeCardFromDeck(cardId, isExtra);
+    }, [removeCardFromDeck]);
+
+    const handleTabChange = useCallback((tab: TabType) => {
+        setActiveTab(tab);
     }, []);
 
     const handleSaveDeck = async () => {
@@ -523,90 +632,61 @@ const CreateDeckPage: React.FC = () => {
             }
         }
 
-        const deckData = {
-            name: deckName,
-            mainDeck: mainDeckCards.map(card => ({
-                id: card.id,
-                name: card.name,
-                count: card.count,
-            })),
-            extraDeck: extraDeckCards.map(card => ({
-                id: card.id,
-                name: card.name,
-                count: card.count,
-            })),
-        };
-
         try {
-            await api.post('/decks', deckData);
-            alert('Deck salvo com sucesso!');
-            navigate('/');
+            const deckData = {
+                name: deckName,
+                mainDeck: (mainDeckCards || []).map(card => ({
+                    id: card.id,
+                    name: card.name,
+                    count: card.count
+                })),
+                extraDeck: (extraDeckCards || []).map(card => ({
+                    id: card.id,
+                    name: card.name,
+                    count: card.count
+                }))
+            };
+
+            await api.put(`/decks/${id}`, deckData);
+            alert('Deck atualizado com sucesso!');
+            navigate('/dashboard');
         } catch (error: any) {
-            const errorMessage = error.response?.data?.error || 'Erro ao salvar o deck. Verifique as regras do deck.';
+            const errorMessage = error.response?.data?.error || 'Erro ao atualizar o deck. Verifique as regras do deck.';
             alert(errorMessage);
-            console.error('Erro ao salvar o deck:', error);
         }
     };
 
-    const handleCardClickForDetails = useCallback((card: Card) => {
-        setSelectedCard(card);
-    }, []);
+    if (loading) {
+        return <div className="loading-container">Carregando Deck...</div>;
+    }
 
-    const handleCardHover = useCallback((card: Card) => {
-        if (hoverTimeoutRef.current) {
-            clearTimeout(hoverTimeoutRef.current);
-        }
-
-        const timeout = setTimeout(() => {
-            setSelectedCard(card);
-        }, 400);
-
-        hoverTimeoutRef.current = timeout;
-    }, []);
-
-    const handleCardLeave = useCallback(() => {
-        if (hoverTimeoutRef.current) {
-            clearTimeout(hoverTimeoutRef.current);
-            hoverTimeoutRef.current = null;
-        }
-    }, []);
-
-    const handleImageError = useCallback((e: React.SyntheticEvent<HTMLImageElement>) => {
-        const target = e.target as HTMLImageElement;
-        target.src = 'https://via.placeholder.com/300x420/333/fff?text=Imagem+Não+Disponível';
-    }, []);
-
-    const handleRemoveCard = useCallback((cardId: number, isExtra: boolean) => {
-        removeCardFromDeck(cardId, isExtra);
-    }, [removeCardFromDeck]);
-
-    const handleRetry = useCallback(() => {
-        fetchCards();
-    }, [fetchCards]);
+    if (error) {
+        return <div className="error-container"><p>{error}</p><button className="back-button" onClick={() => navigate('/dashboard')}>Voltar</button></div>;
+    }
 
     return (
         <div className="create-deck-wrapper">
             <DeckHeader
-                onBack={() => navigate('/dashboard')}
                 deckName={deckName}
-                onNameChange={handleDeckNameChange}
-                onSave={handleSaveDeck}
                 totalMainDeck={totalMainDeck}
                 totalExtraDeck={totalExtraDeck}
                 totalCards={totalCards}
+                onSave={handleSaveDeck}
+                onBack={() => navigate('/dashboard')}
+                onNameChange={handleNameChange}
                 includeBanishedCards={includeBanishedCards}
-                onToggleBanished={handleBanishedToggle}
+                onToggleBanished={handleToggleBanished}
                 editMode={true}
-            />
-
-            <TabNavigation
-                activeTab={activeTab}
-                onTabChange={setActiveTab}
-                totalCards={totalCards}
             />
 
             <div className="deck-builder-main-layout">
                 <div className="main-content">
+                    <TabNavigation
+                        activeTab={activeTab}
+                        onTabChange={handleTabChange}
+                        totalCards={totalCards}
+                    />
+
                     {activeTab === 'search' ? (
                         <CardSearchSection
                             searchTerm={searchTerm}
@@ -623,14 +703,14 @@ const CreateDeckPage: React.FC = () => {
                             page={page}
                             mainDeckCards={mainDeckCards}
                             extraDeckCards={extraDeckCards}
-                            onSearchChange={handleSearchChange}
-                            onTypeChange={handleTypeChange}
-                            onAttributeChange={handleAttributeChange}
-                            onSubtypeChange={handleSubtypeChange}
-                            onLevelChange={handleLevelChange}
-                            onAtkChange={handleAtkChange}
-                            onDefChange={handleDefChange}
-                            onBanishedToggle={handleBanishedToggle}
+                            onSearchChange={handleSearchTermChange}
+                            onTypeChange={handleSelectType}
+                            onAttributeChange={handleSelectAttribute}
+                            onSubtypeChange={handleSelectRace}
+                            onLevelChange={handleLevelSearch}
+                            onAtkChange={handleAtkSearch}
+                            onDefChange={handleDefSearch}
+                            onBanishedToggle={handleToggleBanished}
                             onAddCard={addCardToDeck}
                             onCardDetails={handleCardClickForDetails}
                             onCardHover={handleCardHover}
@@ -667,4 +747,4 @@ const CreateDeckPage: React.FC = () => {
     );
 };
 
-export default CreateDeckPage;
+export default EditDeckPage;

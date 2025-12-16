@@ -1,4 +1,3 @@
-// src/components/deck-builder/DeckCardGrid.tsx
 import React from 'react';
 import { type DeckCardItem, isExtraDeckCard } from './utils';
 

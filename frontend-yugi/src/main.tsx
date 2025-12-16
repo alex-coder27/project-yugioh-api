@@ -7,6 +7,8 @@ import { ThemeProvider } from './hooks/useTheme';
 import AuthPage from './pages/Auth/AuthPage';
 import DashboardPage from './pages/Dashboard/DashboardPage';
 import CreateDeckPage from './pages/CreateDeck/CreateDeckPage';
+import ViewDeckPage from './components/deck/ViewDeckPage';
+import EditDeckPage from './components/deck/EditDeckPage';
 
 import './index.css';
 
@@ -52,6 +54,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
                 </ProtectedRoute>
               }
             />
+            <Route path="/deck/:id" element={<ViewDeckPage />} />
+            <Route path="/deck/edit/:id" element={<EditDeckPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </BrowserRouter>

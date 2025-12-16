@@ -13,7 +13,7 @@
 }
 
 body.dark-mode {
-    --color-background: #111111; 
+    --color-background: #1c1b1f; 
     --color-card-bg: #222222; 
     --color-text-main: #ffffff;
     --color-text-secondary: #aaaaaa;
@@ -28,6 +28,7 @@ html, body {
     width: 100%;
     margin: 0;
     padding: 0;
+    box-sizing: border-box;
 }
 
 body {

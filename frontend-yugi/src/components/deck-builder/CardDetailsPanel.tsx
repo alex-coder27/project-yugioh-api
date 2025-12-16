@@ -1,4 +1,3 @@
-// src/components/deck-builder/CardDetailsPanel.tsx
 import React from 'react';
 import type { Card } from './utils';
 

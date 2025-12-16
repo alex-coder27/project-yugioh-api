@@ -11,7 +11,6 @@ export const LoginUserDTO = z.object({
     password: z.string().min(6, { message: "A senha deve ter no mínimo 6 caracteres." }),
 });
 
-
 const DeckCardSchema = z.object({
     id: z.number().int().positive({ message: "O ID da carta deve ser um número inteiro positivo." }), 
     name: z.string().min(1).max(255),

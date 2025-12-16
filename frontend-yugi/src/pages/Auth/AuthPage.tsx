@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../../hooks/useAuth';
-import { useTheme } from '../../hooks/useTheme';
 import { useNavigate, useLocation } from 'react-router-dom'; 
 import './AuthPage.css';
+import ThemeToggleButton from '../../components/shared/ThemeToggleButton/ThemeToggleButton';
 
 type FormType = 'login' | 'register';
 
@@ -23,7 +23,6 @@ const AuthPage: React.FC = () => {
     const [loading, setLoading] = useState(false);
     
     const { login, register, isAuthenticated } = useAuth();
-    const { theme, toggleTheme } = useTheme();
     const navigate = useNavigate();
 
     useEffect(() => {
@@ -78,12 +77,7 @@ const AuthPage: React.FC = () => {
 
     return (
         <div className="auth-page-wrapper">
-            <button 
-                onClick={toggleTheme} 
-                className="theme-toggle"
-            >
-                {theme === 'light' ? '🌙' : '☀️'}
-            </button>
+            <ThemeToggleButton variant="fixed" />
 
             <div className="duelist-container">
 

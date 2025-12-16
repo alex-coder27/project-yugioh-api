@@ -82,17 +82,25 @@ export const getCards = async (req: Request, res: Response) => {
         return res.status(500).json({ error: 'Erro interno ao validar parâmetros de busca.' });
     }
 
-    const { fname, type, attribute, race, level, atk, def, offset, num } = validatedQuery;
+    const { fname, type, attribute, race, level, atk, def, offset, num, id } = validatedQuery;
 
     const banlistStatusMap = await fetchBanlistStatus();
 
-    const apiParams: any = { fname, type, attribute, race, level, atk, def, offset, num };
-    
-    Object.keys(apiParams).forEach(key => {
-        if (apiParams[key] === undefined || apiParams[key] === '') {
-            delete apiParams[key];
-        }
-    });
+    let apiParams: any = {};
+    let isIdSearch = false;
+
+    if (id) {
+        apiParams = { id: String(id) };
+        isIdSearch = true;
+    } else {
+        apiParams = { fname, type, attribute, race, level, atk, def, offset, num };
+        
+        Object.keys(apiParams).forEach(key => {
+            if (apiParams[key] === undefined || apiParams[key] === '') {
+                delete apiParams[key];
+            }
+        });
+    }
 
     try {
         const response = await axios.get(YGO_API_URL, {
@@ -122,8 +130,15 @@ export const getCards = async (req: Request, res: Response) => {
         });
 
         let filteredCards = meshedCards;
+        
+        if (isIdSearch) {
+            const requestedIds = String(id).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+            
+            filteredCards = meshedCards.filter(card => requestedIds.includes(card.id));
 
-        // FILTRAR/ORDENAR POR ATK
+            return res.json(filteredCards);
+        }
+
         if (atk) {
             if (atk === 'asc') {
                 filteredCards = [...filteredCards].sort((a, b) => {
@@ -146,7 +161,6 @@ export const getCards = async (req: Request, res: Response) => {
             }
         }
 
-        // FILTRAR/ORDENAR POR DEF
         if (def) {
             if (def === 'asc') {
                 filteredCards = [...filteredCards].sort((a, b) => {

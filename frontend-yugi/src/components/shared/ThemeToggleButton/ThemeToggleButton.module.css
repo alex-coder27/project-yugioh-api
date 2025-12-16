@@ -1,0 +1,55 @@
+.button {
+  background: var(--color-card-bg);
+  border: 2px solid var(--color-primary);
+  border-radius: 50%;
+  width: 45px;
+  height: 45px;
+  font-size: 1.5em;
+  cursor: pointer;
+  transition: all 0.3s ease-in-out;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+}
+
+.button:hover {
+  color: var(--color-card-bg);
+  background-color: var(--color-primary);
+  transform: scale(1.1);
+  box-shadow: 0 0 15px var(--color-primary);
+}
+
+.fixed {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  z-index: 100;
+}
+
+.inline {
+  position: relative;
+}
+
+.headerFixed {
+  position: fixed;
+  top: 5px;
+  right: 20px;
+  z-index: 100;
+}
+
+.headerInline {
+  position: initial;
+  margin-left: 10px;
+}
+
+
+@media (max-width: 480px) {
+  .fixed {
+    top: 10px;
+    right: 10px;
+    width: 40px;
+    height: 40px;
+    font-size: 1.3em;
+  }
+}

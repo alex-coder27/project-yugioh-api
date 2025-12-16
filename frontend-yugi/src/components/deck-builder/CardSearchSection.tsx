@@ -1,5 +1,5 @@
 import React, { type ChangeEvent } from 'react';
-import type { Card } from './utils';
+import type { Card, DeckCardItem } from './utils';
 import SearchControls from './SearchControls';
 import CardGrid from './CardGrid';
 import LoadingErrorDisplay from '../shared/LoadingErrorDisplay';
@@ -17,6 +17,8 @@ interface CardSearchSectionProps {
     isLoading: boolean;
     fetchError: string | null;
     page: number;
+    mainDeckCards: DeckCardItem[]; 
+    extraDeckCards: DeckCardItem[]; 
     onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
     onTypeChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     onAttributeChange: (e: ChangeEvent<HTMLSelectElement>) => void;
@@ -48,6 +50,8 @@ const CardSearchSection: React.FC<CardSearchSectionProps> = ({
     isLoading,
     fetchError,
     page,
+    mainDeckCards,
+    extraDeckCards,
     onSearchChange,
     onTypeChange,
     onAttributeChange,
@@ -110,6 +114,8 @@ const CardSearchSection: React.FC<CardSearchSectionProps> = ({
             {hasResults && !isLoading && !fetchError && (
                 <CardGrid
                     cards={cards}
+                    mainDeckCards={mainDeckCards}
+                    extraDeckCards={extraDeckCards}
                     onAddCard={onAddCard}
                     onCardDetails={onCardDetails}
                     onCardHover={onCardHover}

@@ -6,7 +6,7 @@ import {
     SPELL_TRAP_SUBTYPES,
     LEVELS,
     ATK_FILTERS,
-    DEF_FILTERS // ADICIONADO: Importar filtros de DEF
+    DEF_FILTERS
 } from './utils';
 
 interface SearchControlsProps {
@@ -16,7 +16,7 @@ interface SearchControlsProps {
     selectedRace: string;
     levelSearch: string;
     atkSearch: string;
-    defSearch: string; // ADICIONADO: filtro de DEF
+    defSearch: string;
     includeBanishedCards: boolean;
     onSearchChange: (e: ChangeEvent<HTMLInputElement>) => void;
     onTypeChange: (e: ChangeEvent<HTMLSelectElement>) => void;
@@ -24,7 +24,7 @@ interface SearchControlsProps {
     onSubtypeChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     onLevelChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     onAtkChange: (e: ChangeEvent<HTMLSelectElement>) => void;
-    onDefChange: (e: ChangeEvent<HTMLSelectElement>) => void; // ADICIONADO: handler de DEF
+    onDefChange: (e: ChangeEvent<HTMLSelectElement>) => void;
     onBanishedToggle: () => void;
 }
 
@@ -35,7 +35,7 @@ const SearchControls: React.FC<SearchControlsProps> = ({
     selectedRace,
     levelSearch,
     atkSearch,
-    defSearch, // ADICIONADO
+    defSearch,
     includeBanishedCards,
     onSearchChange,
     onTypeChange,
@@ -43,7 +43,7 @@ const SearchControls: React.FC<SearchControlsProps> = ({
     onSubtypeChange,
     onLevelChange,
     onAtkChange,
-    onDefChange, // ADICIONADO
+    onDefChange,
     onBanishedToggle
 }) => {
     const isMonsterCard = selectedType && !['Spell Card', 'Trap Card'].includes(selectedType);
@@ -132,7 +132,7 @@ const SearchControls: React.FC<SearchControlsProps> = ({
                         onChange={onDefChange}
                         className="filter-select"
                     >
-                        {DEF_FILTERS.map(def => ( // ADICIONADO: Filtro de DEF
+                        {DEF_FILTERS.map(def => (
                             <option key={def.value} value={def.value}>{def.label}</option>
                         ))}
                     </select>

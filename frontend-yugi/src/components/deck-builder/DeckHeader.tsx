@@ -1,26 +1,53 @@
 import React, { type ChangeEvent } from 'react';
-import { useNavigate } from 'react-router-dom';
+import ThemeToggleButton from '../shared/ThemeToggleButton/ThemeToggleButton';
 
 interface DeckHeaderProps {
     deckName: string;
-    onDeckNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
-    onSaveDeck: () => void;
+    totalMainDeck: number;
+    totalExtraDeck: number;
+    totalCards: number;
+    onSave: () => Promise<void>;
+    onBack: () => void;
+    onNameChange: (e: ChangeEvent<HTMLInputElement>) => void;
+    includeBanishedCards: boolean;
+    onToggleBanished: () => void;
+    editMode: boolean;
 }
 
-const DeckHeader: React.FC<DeckHeaderProps> = ({ deckName, onDeckNameChange, onSaveDeck }) => {
-    const navigate = useNavigate();
-
+const DeckHeader: React.FC<DeckHeaderProps> = ({
+    deckName,
+    onSave,
+    onBack,
+    onNameChange,
+    includeBanishedCards,
+    onToggleBanished,
+    editMode
+}) => {
     return (
         <header className="deck-builder-header">
-            <button onClick={() => navigate('/')} className="back-button">{'< Voltar'}</button>
+            <button onClick={onBack} className="back-button">{'< Voltar'}</button>
             <input
                 type="text"
                 value={deckName}
-                onChange={onDeckNameChange}
+                onChange={onNameChange}
                 className="deck-name-input"
                 placeholder="Nome do Deck"
+                id='deck-name'
             />
-            <button onClick={onSaveDeck} className="save-deck-button">Salvar Deck</button>
+
+            {editMode && (
+                <div className="banished-toggle-container">
+                    <label className="toggle-switch small">
+                        <input type="checkbox" checked={includeBanishedCards} onChange={onToggleBanished} />
+                        <span className="slider round"></span>
+                    </label>
+                    <span className="toggle-label">Incluir Proibidas?</span>
+                </div>
+            )}
+            
+            <button onClick={onSave} className="save-deck-button">Salvar Deck</button>
+
+            <ThemeToggleButton variant="headerInline" />
         </header>
     );
 };

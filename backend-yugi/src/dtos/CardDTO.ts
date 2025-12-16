@@ -71,6 +71,8 @@ export const CardQueryDTO = z.object({
         message: 'Num deve ser um número inteiro.',
     }).transform(Number),
     
+    id: z.string().optional().transform(emptyStringToUndefined),
+    
     includeBanished: z.string().optional().transform(val => val === 'true' ? true : false),
 });
 
