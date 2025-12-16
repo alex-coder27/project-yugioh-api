@@ -109,14 +109,13 @@ const ViewDeckPage: React.FC = () => {
             <header className="deck-builder-header">
                 <button onClick={() => navigate('/dashboard')} className="back-button">{'< Voltar'}</button>
                 
-                <div className="deck-name-input" style={{ flexGrow: 1, textAlign: 'center', fontSize: '2em', fontWeight: 'bold' }}>
+                <div className="deck-name-input">
                     {deckName}
                 </div>
 
                 <button 
                     onClick={() => navigate(`/deck/edit/${id}`)} 
                     className="save-deck-button"
-                    style={{ marginLeft: '10px' }}
                 >
                     Editar Deck
                 </button>

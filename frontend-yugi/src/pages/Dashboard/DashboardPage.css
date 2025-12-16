@@ -1,7 +1,6 @@
 .dashboard-wrapper {
     width: 100%;
     min-height: 100vh;
-    
     color: var(--color-text-main);
     transition: background-color 0.5s, color 0.5s;
     box-sizing: border-box;
@@ -25,13 +24,13 @@
     letter-spacing: 2px;
 }
 
-.user-info {
+.user-controls {
     display: flex;
     align-items: center;
     gap: 20px;
 }
 
-.user-info p {
+.user-controls p {
     margin: 0;
     font-size: 1.1em;
     font-weight: 700;
@@ -56,52 +55,6 @@
     padding: 0 20px;
 }
 
-.decks-section h2 {
-    font-size: 1.8em;
-    color: var(--color-text-main);
-    margin-bottom: 20px;
-    border-bottom: 1px dashed var(--color-border);
-    padding-bottom: 5px;
-}
-
-.deck-list-placeholder {
-    background-color: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 8px;
-    padding: 40px;
-    text-align: center;
-}
-
-.deck-list-placeholder p {
-    font-size: 1.2em;
-    margin-bottom: 25px;
-    color: var(--color-text-secondary);
-}
-
-.duelist-button {
-    display: inline-block; 
-    width: auto;
-    margin-top: 10px; 
-
-    padding: 10px 20px; 
-    border: none;
-    border-radius: 5px;
-    font-size: 1.0em; 
-    font-weight: 700;
-    text-transform: uppercase;
-    cursor: pointer;
-    transition: background-color 0.3s, transform 0.1s, box-shadow 0.3s;
-}
-
-.duelist-button.primary {
-    background-color: var(--color-primary);
-    color: var(--color-card-bg);
-}
-
-.duelist-button.primary:hover {
-    background-color: #ff9900;
-}
-
 .decks-header {
     display: flex;
     justify-content: space-between;
@@ -110,6 +63,8 @@
 }
 
 .decks-header h2 {
+    font-size: 1.8em;
+    color: var(--color-text-main);
     margin: 0;
 }
 
@@ -124,6 +79,7 @@
 .loading-decks p {
     color: var(--color-text-secondary);
     font-style: italic;
+    font-size: 1.1em;
 }
 
 .deck-error {
@@ -137,6 +93,7 @@
 .deck-error p {
     color: #dc3545;
     margin-bottom: 15px;
+    font-size: 1.1em;
 }
 
 .refresh-button {
@@ -154,38 +111,104 @@
     background-color: var(--color-button-hover);
 }
 
+.deck-list-placeholder {
+    background-color: var(--color-card-bg);
+    border: 2px dashed var(--color-border);
+    border-radius: 10px;
+    padding: 60px 40px;
+    text-align: center;
+}
+
+.deck-list-placeholder p {
+    font-size: 1.2em;
+    margin-bottom: 10px;
+    color: var(--color-text-main);
+}
+
+.deck-list-placeholder .hint {
+    font-size: 1em;
+    color: var(--color-text-secondary);
+    font-style: italic;
+    margin-bottom: 25px;
+}
+
+.duelist-button {
+    display: inline-block;
+    width: auto;
+    margin-top: 10px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 6px;
+    font-size: 1em;
+    font-weight: 700;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.duelist-button.primary {
+    background-color: var(--color-primary);
+    color: white;
+}
+
+.duelist-button.primary:hover {
+    background-color: var(--color-button-hover);
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
 .deck-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
-    gap: 20px;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 24px;
     margin-top: 20px;
 }
 
 .deck-card {
     background-color: var(--color-card-bg);
-    border: 1px solid var(--color-border);
-    border-radius: 10px;
-    padding: 20px;
-    transition: transform 0.3s, box-shadow 0.3s;
+    border: 2px solid var(--color-border);
+    border-radius: 12px;
+    padding: 24px;
+    transition: all 0.3s ease;
     display: flex;
     flex-direction: column;
+    position: relative;
+    overflow: hidden;
+}
+
+.deck-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, var(--color-primary), var(--color-button-hover));
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+.deck-card:hover::before {
+    transform: scaleX(1);
 }
 
 .deck-card:hover {
-    transform: translateY(-5px);
-    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+    transform: translateY(-8px);
+    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
     border-color: var(--color-primary);
 }
 
 .deck-card-header {
-    margin-bottom: 15px;
+    margin-bottom: 20px;
+    padding-bottom: 15px;
+    border-bottom: 1px solid var(--color-border);
 }
 
 .deck-name {
-    font-size: 1.3em;
+    font-size: 1.4em;
     font-weight: 700;
     color: var(--color-primary);
-    margin: 0 0 5px 0;
+    margin: 0 0 8px 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -194,51 +217,68 @@
 .deck-date {
     font-size: 0.85em;
     color: var(--color-text-secondary);
+    font-style: italic;
 }
 
 .deck-card-stats {
-    display: grid;
-    grid-template-columns: repeat(3, 1fr);
-    gap: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
     margin-bottom: 20px;
-    padding: 15px;
+    padding: 16px;
     background-color: var(--color-input-bg);
     border-radius: 8px;
 }
 
 .stat-item {
-    text-align: center;
+    display: flex;
+    align-items: center;
+    gap: 12px;
 }
 
-.stat-label {
-    display: block;
-    font-size: 0.8em;
-    color: var(--color-text-secondary);
-    margin-bottom: 5px;
+.stat-icon {
+    font-size: 1.8em;
+    filter: grayscale(0.2);
+}
+
+.stat-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .stat-value {
-    display: block;
-    font-size: 1.2em;
+    font-size: 1.3em;
     font-weight: 700;
     color: var(--color-text-main);
+    line-height: 1;
+}
+
+.stat-label {
+    font-size: 0.85em;
+    color: var(--color-text-secondary);
+    font-weight: 500;
 }
 
 .deck-card-actions {
     display: flex;
-    gap: 10px;
+    gap: 8px;
     margin-top: auto;
 }
 
 .action-button {
     flex: 1;
-    padding: 8px 12px;
+    padding: 10px 12px;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     font-weight: 700;
-    font-size: 0.9em;
-    transition: all 0.3s;
+    font-size: 0.85em;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
 }
 
 .view-button {
@@ -248,6 +288,8 @@
 
 .view-button:hover {
     background-color: #218838;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
 }
 
 .edit-button {
@@ -257,6 +299,8 @@
 
 .edit-button:hover {
     background-color: #e0a800;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
 }
 
 .delete-button {
@@ -266,13 +310,30 @@
 
 .delete-button:hover {
     background-color: #c82333;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
 }
 
 @media (max-width: 768px) {
-    .decks-header {
+    .dashboard-header {
         flex-direction: column;
         gap: 15px;
         align-items: flex-start;
+    }
+
+    .user-controls {
+        width: 100%;
+        justify-content: space-between;
+    }
+
+    .decks-header {
+        flex-direction: column;
+        gap: 15px;
+        align-items: stretch;
+    }
+
+    .decks-header .duelist-button {
+        width: 100%;
     }
     
     .deck-grid {
@@ -280,6 +341,26 @@
     }
     
     .deck-card-actions {
-        flex-direction: column;
+        flex-wrap: wrap;
+    }
+
+    .action-button {
+        flex: 1 1 calc(50% - 4px);
+        min-width: 120px;
+    }
+}
+
+@media (max-width: 480px) {
+    .deck-card {
+        padding: 20px 16px;
+    }
+
+    .deck-name {
+        font-size: 1.2em;
+    }
+
+    .action-button {
+        font-size: 0.8em;
+        padding: 8px 10px;
     }
 }

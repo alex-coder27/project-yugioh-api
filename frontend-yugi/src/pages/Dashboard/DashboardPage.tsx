@@ -6,7 +6,7 @@ import ThemeToggleButton from '../../components/shared/ThemeToggleButton/ThemeTo
 import api from '../../services/api';
 
 interface DeckCard {
-    cardApiId: number;
+    cardApiId: string;
     copies: number;
 }
 
@@ -15,8 +15,8 @@ interface Deck {
     name: string;
     userId: number;
     cards: DeckCard[];
-    createdAt?: string;
-    updatedAt?: string;
+    createdAt: string;
+    updatedAt: string;
 }
 
 const DashboardPage: React.FC = () => {
@@ -71,16 +71,17 @@ const DashboardPage: React.FC = () => {
         }
     };
 
-    const calculateDeckStats = (deck: Deck) => {
-        const totalCards = deck.cards.reduce((sum, card) => sum + card.copies, 0);
-        const uniqueCards = deck.cards.length;
-        
-        return {
-            totalCards,
-            uniqueCards,
-            mainDeckCount: totalCards,
-            extraDeckCount: 0,
-        };
+    const getTotalCards = (deck: Deck) => {
+        return deck.cards.reduce((sum, card) => sum + card.copies, 0);
+    };
+
+    const formatDate = (dateString: string) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString('pt-BR', { 
+            day: '2-digit', 
+            month: 'short', 
+            year: 'numeric' 
+        });
     };
 
     if (loading || !user) { 
@@ -101,12 +102,12 @@ const DashboardPage: React.FC = () => {
             <main className="dashboard-main">
                 <section className="decks-section">
                     <div className="decks-header">
-                        <h2>Meus Decks</h2>
+                        <h2>Meus Decks ({decks.length})</h2>
                         <button 
                             className="duelist-button primary"
                             onClick={handleCreateDeck}
                         >
-                            CRIAR NOVO DECK
+                            + CRIAR NOVO DECK
                         </button>
                     </div>
                     
@@ -123,40 +124,46 @@ const DashboardPage: React.FC = () => {
                         </div>
                     ) : decks.length === 0 ? (
                         <div className="deck-list-placeholder">
-                            <p>Comece a construir seu arsenal de cartas!</p>
+                            <p>Você ainda não criou nenhum deck!</p>
+                            <p className="hint">Comece a construir seu arsenal de cartas agora.</p>
                             <button 
                                 className="duelist-button primary"
                                 onClick={handleCreateDeck}
                             >
-                                CRIAR NOVO DECK
+                                CRIAR PRIMEIRO DECK
                             </button>
                         </div>
                     ) : (
                         <div className="deck-grid">
                             {decks.map(deck => {
-                                const stats = calculateDeckStats(deck);
+                                const totalCards = getTotalCards(deck);
+                                const uniqueCards = deck.cards.length;
                                 
                                 return (
                                     <div key={deck.id} className="deck-card">
                                         <div className="deck-card-header">
-                                            <h3 className="deck-name">{deck.name}</h3>
+                                            <h3 className="deck-name" title={deck.name}>
+                                                {deck.name}
+                                            </h3>
                                             <span className="deck-date">
-                                                ID: {deck.id} • Cartas: {stats.totalCards}
+                                                {formatDate(deck.createdAt)}
                                             </span>
                                         </div>
                                         
                                         <div className="deck-card-stats">
                                             <div className="stat-item">
-                                                <span className="stat-label">Total:</span>
-                                                <span className="stat-value">{stats.totalCards}</span>
+                                                <span className="stat-icon">🎴</span>
+                                                <div className="stat-info">
+                                                    <span className="stat-value">{totalCards}</span>
+                                                    <span className="stat-label">Total de Cartas</span>
+                                                </div>
                                             </div>
                                             <div className="stat-item">
-                                                <span className="stat-label">Únicas:</span>
-                                                <span className="stat-value">{stats.uniqueCards}</span>
-                                            </div>
-                                            <div className="stat-item">
-                                                <span className="stat-label">Main:</span>
-                                                <span className="stat-value">{stats.mainDeckCount}</span>
+                                                <span className="stat-icon">⭐</span>
+                                                <div className="stat-info">
+                                                    <span className="stat-value">{uniqueCards}</span>
+                                                    <span className="stat-label">Cartas Únicas</span>
+                                                </div>
                                             </div>
                                         </div>
                                         
@@ -164,20 +171,23 @@ const DashboardPage: React.FC = () => {
                                             <button 
                                                 className="action-button view-button"
                                                 onClick={() => handleViewDeck(deck.id)}
+                                                title="Visualizar deck"
                                             >
-                                                Visualizar
+                                                👁️ Visualizar
                                             </button>
                                             <button 
                                                 className="action-button edit-button"
                                                 onClick={() => handleEditDeck(deck.id)}
+                                                title="Editar deck"
                                             >
-                                                Editar
+                                                ✏️ Editar
                                             </button>
                                             <button 
                                                 className="action-button delete-button"
                                                 onClick={() => handleDeleteDeck(deck.id, deck.name)}
+                                                title="Deletar deck"
                                             >
-                                                Deletar
+                                                🗑️ Deletar
                                             </button>
                                         </div>
                                     </div>
