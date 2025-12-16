@@ -10,11 +10,30 @@ interface AuthenticatedRequest extends Request {
 interface DeckCardCreateData {
     cardApiId: number;
     copies: number;
+    isExtraDeck: boolean;
+}
+
+interface DeckCardWithExtra {
+    id?: number;
+    deckId: number;
+    cardApiId: number;
+    copies: number;
+    isExtraDeck: boolean;
+    createdAt?: Date;
+    updatedAt?: Date;
 }
 
 const MIN_MAIN_DECK = 40;
 const MAX_MAIN_DECK = 60;
 const MAX_EXTRA_DECK = 15;
+
+const filterMainDeckCards = (cards: any[]): DeckCardWithExtra[] => {
+    return (cards as DeckCardWithExtra[]).filter(card => !card.isExtraDeck);
+};
+
+const filterExtraDeckCards = (cards: any[]): DeckCardWithExtra[] => {
+    return (cards as DeckCardWithExtra[]).filter(card => card.isExtraDeck);
+};
 
 export const createDeck = async (req: AuthenticatedRequest, res: Response) => {
     const userId = req.userId;
@@ -61,11 +80,15 @@ export const createDeck = async (req: AuthenticatedRequest, res: Response) => {
     }
 
     try {
-        const allCards = [...mainDeck, ...extraDeck];
+        const allCards = [
+            ...mainDeck.map(card => ({ ...card, isExtraDeck: false })),
+            ...extraDeck.map(card => ({ ...card, isExtraDeck: true }))
+        ];
 
         const deckCardsCreation: DeckCardCreateData[] = allCards.map(card => ({
             cardApiId: card.id,
             copies: card.count,
+            isExtraDeck: card.isExtraDeck,
         }));
 
         console.log('Criando deck com cards:', deckCardsCreation);
@@ -83,9 +106,20 @@ export const createDeck = async (req: AuthenticatedRequest, res: Response) => {
             }
         });
 
+        const mainDeckCards = filterMainDeckCards(newDeck.cards);
+        const extraDeckCards = filterExtraDeckCards(newDeck.cards);
+        
+        const processedDeck = {
+            ...newDeck,
+            mainDeckCount: mainDeckCards.reduce((sum, card) => sum + card.copies, 0),
+            extraDeckCount: extraDeckCards.reduce((sum, card) => sum + card.copies, 0),
+            mainDeckUnique: mainDeckCards.length,
+            extraDeckUnique: extraDeckCards.length
+        };
+
         return res.status(201).json({
             message: 'Deck criado com sucesso.',
-            deck: newDeck
+            deck: processedDeck
         });
 
     } catch (error: any) {
@@ -126,7 +160,20 @@ export const getDecks = async (req: AuthenticatedRequest, res: Response) => {
             },
         });
 
-        return res.status(200).json({ decks });
+        const processedDecks = decks.map(deck => {
+            const mainDeckCards = filterMainDeckCards(deck.cards);
+            const extraDeckCards = filterExtraDeckCards(deck.cards);
+            
+            return {
+                ...deck,
+                mainDeckCount: mainDeckCards.reduce((sum, card) => sum + card.copies, 0),
+                extraDeckCount: extraDeckCards.reduce((sum, card) => sum + card.copies, 0),
+                mainDeckUnique: mainDeckCards.length,
+                extraDeckUnique: extraDeckCards.length
+            };
+        });
+
+        return res.status(200).json({ decks: processedDecks });
     } catch (error: any) {
         console.error('Erro ao buscar decks:', error);
         return res.status(500).json({ error: 'Erro interno ao buscar decks.', details: error.message });
@@ -160,7 +207,18 @@ export const getDeckById = async (req: AuthenticatedRequest, res: Response) => {
             return res.status(404).json({ error: 'Deck não encontrado.' });
         }
 
-        return res.status(200).json({ deck });
+        const mainDeckCards = filterMainDeckCards(deck.cards);
+        const extraDeckCards = filterExtraDeckCards(deck.cards);
+        
+        const processedDeck = {
+            ...deck,
+            mainDeckCount: mainDeckCards.reduce((sum, card) => sum + card.copies, 0),
+            extraDeckCount: extraDeckCards.reduce((sum, card) => sum + card.copies, 0),
+            mainDeckUnique: mainDeckCards.length,
+            extraDeckUnique: extraDeckCards.length
+        };
+
+        return res.status(200).json({ deck: processedDeck });
     } catch (error: any) {
         console.error('Erro ao buscar deck:', error);
         return res.status(500).json({ error: 'Erro interno ao buscar deck.', details: error.message });
@@ -228,11 +286,15 @@ export const updateDeck = async (req: AuthenticatedRequest, res: Response) => {
             return res.status(404).json({ error: 'Deck não encontrado.' });
         }
 
-        const allCards = [...mainDeck, ...extraDeck];
+        const allCards = [
+            ...mainDeck.map(card => ({ ...card, isExtraDeck: false })),
+            ...extraDeck.map(card => ({ ...card, isExtraDeck: true }))
+        ];
 
         const deckCardsCreation: DeckCardCreateData[] = allCards.map(card => ({
             cardApiId: card.id,
             copies: card.count,
+            isExtraDeck: card.isExtraDeck,
         }));
 
         await prisma.$transaction([
@@ -255,8 +317,36 @@ export const updateDeck = async (req: AuthenticatedRequest, res: Response) => {
             }),
         ]);
 
+        const updatedDeck = await prisma.deck.findFirst({
+            where: {
+                id: deckId,
+                userId: userId,
+            },
+            include: {
+                cards: true,
+            },
+        });
+
+        if (!updatedDeck) {
+            return res.status(200).json({
+                message: 'Deck atualizado com sucesso.',
+            });
+        }
+
+        const mainDeckCards = filterMainDeckCards(updatedDeck.cards);
+        const extraDeckCards = filterExtraDeckCards(updatedDeck.cards);
+        
+        const processedDeck = {
+            ...updatedDeck,
+            mainDeckCount: mainDeckCards.reduce((sum, card) => sum + card.copies, 0),
+            extraDeckCount: extraDeckCards.reduce((sum, card) => sum + card.copies, 0),
+            mainDeckUnique: mainDeckCards.length,
+            extraDeckUnique: extraDeckCards.length
+        };
+
         return res.status(200).json({
             message: 'Deck atualizado com sucesso.',
+            deck: processedDeck
         });
 
     } catch (error: any) {

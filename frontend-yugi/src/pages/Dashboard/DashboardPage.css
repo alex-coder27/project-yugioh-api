@@ -1,27 +1,70 @@
 .dashboard-wrapper {
     width: 100%;
     min-height: 100vh;
+    background-color: var(--color-background);
     color: var(--color-text-main);
     transition: background-color 0.5s, color 0.5s;
-    box-sizing: border-box;
-    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    font-family: 'Roboto', sans-serif;
+    position: relative;
+}
+
+.dashboard-wrapper::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: inherit;
+    background-size: 50px 50px;
+    background-attachment: fixed;
+    opacity: 0.3;
+    pointer-events: none;
+    z-index: -1;
 }
 
 .dashboard-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding: 10px 0;
+    padding: 20px 32px;
+    background-color: var(--color-card-bg);
     border-bottom: 2px solid var(--color-border);
-    margin-bottom: 30px;
-    transition: border-color 0.5s;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    transition: all 0.3s;
+    backdrop-filter: blur(10px);
+    background-color: rgba(var(--color-card-bg-rgb), 0.9);
 }
 
-.dashboard-header h1 {
-    font-size: 2.5em;
-    color: var(--color-primary);
+:root {
+    --color-card-bg-rgb: 255, 255, 255;
+}
+
+body.dark-mode {
+    --color-card-bg-rgb: 34, 34, 34;
+}
+
+.header-title-section h1 {
+    font-size: 2.2rem;
+    font-weight: 800;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-button-hover));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+    letter-spacing: -0.5px;
     text-transform: uppercase;
-    letter-spacing: 2px;
+}
+
+.header-subtitle {
+    font-size: 0.95rem;
+    color: var(--color-text-secondary);
+    font-weight: 500;
 }
 
 .user-controls {
@@ -30,138 +73,278 @@
     gap: 20px;
 }
 
-.user-controls p {
-    margin: 0;
-    font-size: 1.1em;
-    font-weight: 700;
+.user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 8px;
+}
+
+.welcome-text {
+    font-size: 1rem;
+    color: var(--color-text-main);
+    font-weight: 600;
+}
+
+.welcome-text strong {
+    color: var(--color-primary);
+}
+
+.user-stats {
+    display: flex;
+    gap: 8px;
+}
+
+.stat-badge {
+    font-size: 0.75rem;
+    padding: 4px 10px;
+    background-color: var(--color-input-bg);
+    color: var(--color-text-secondary);
+    border-radius: 20px;
+    font-weight: 600;
+    border: 1px solid var(--color-border);
+    transition: all 0.15s;
+}
+
+.stat-badge:hover {
+    background-color: var(--color-primary);
+    color: white;
+    transform: translateY(-1px);
+    border-color: var(--color-primary);
 }
 
 .logout-button {
-    padding: 8px 15px;
-    background-color: var(--color-text-secondary);
-    color: var(--color-background);
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    background: linear-gradient(135deg, var(--color-primary), var(--color-button-hover));
+    color: white;
     border: none;
-    border-radius: 5px;
-    cursor: pointer;
+    border-radius: 8px;
     font-weight: 700;
-    transition: background-color 0.3s;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    font-size: 0.85rem;
+    letter-spacing: 0.5px;
 }
 
 .logout-button:hover {
-    background-color: #d10000;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px var(--color-glow-dark);
+}
+
+.logout-icon {
+    font-size: 1rem;
 }
 
 .dashboard-main {
-    padding: 0 20px;
+    flex: 1;
+    padding: 32px;
+    max-width: 1400px;
+    margin: 0 auto;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
 }
 
-.decks-header {
+.section-header {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 30px;
+    margin-bottom: 32px;
+    padding-bottom: 24px;
+    border-bottom: 2px solid var(--color-border);
 }
 
-.decks-header h2 {
-    font-size: 1.8em;
+.section-title {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+}
+
+.section-title h2 {
+    font-size: 1.8rem;
+    font-weight: 700;
     color: var(--color-text-main);
     margin: 0;
 }
 
-.loading-decks {
-    text-align: center;
-    padding: 40px;
-    background-color: var(--color-card-bg);
-    border-radius: 10px;
-    border: 1px solid var(--color-border);
-}
-
-.loading-decks p {
-    color: var(--color-text-secondary);
-    font-style: italic;
-    font-size: 1.1em;
-}
-
-.deck-error {
-    text-align: center;
-    padding: 40px;
-    background-color: rgba(220, 53, 69, 0.1);
-    border-radius: 10px;
-    border: 1px solid rgba(220, 53, 69, 0.3);
-}
-
-.deck-error p {
-    color: #dc3545;
-    margin-bottom: 15px;
-    font-size: 1.1em;
-}
-
-.refresh-button {
-    background-color: var(--color-primary);
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    border-radius: 5px;
-    cursor: pointer;
-    font-weight: 700;
-    transition: background-color 0.3s;
-}
-
-.refresh-button:hover {
-    background-color: var(--color-button-hover);
-}
-
-.deck-list-placeholder {
-    background-color: var(--color-card-bg);
-    border: 2px dashed var(--color-border);
-    border-radius: 10px;
-    padding: 60px 40px;
-    text-align: center;
-}
-
-.deck-list-placeholder p {
-    font-size: 1.2em;
-    margin-bottom: 10px;
-    color: var(--color-text-main);
-}
-
-.deck-list-placeholder .hint {
-    font-size: 1em;
-    color: var(--color-text-secondary);
-    font-style: italic;
-    margin-bottom: 25px;
+.section-actions {
+    display: flex;
+    align-items: center;
+    gap: 16px;
 }
 
 .duelist-button {
-    display: inline-block;
-    width: auto;
-    margin-top: 10px;
-    padding: 12px 24px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    padding: 14px 28px;
     border: none;
-    border-radius: 6px;
-    font-size: 1em;
+    border-radius: 8px;
+    font-size: 0.95rem;
     font-weight: 700;
-    text-transform: uppercase;
     cursor: pointer;
     transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    position: relative;
+    overflow: hidden;
+}
+
+.duelist-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.5s;
+}
+
+.duelist-button:hover::before {
+    left: 100%;
 }
 
 .duelist-button.primary {
-    background-color: var(--color-primary);
+    background: linear-gradient(135deg, var(--color-primary), var(--color-button-hover));
     color: white;
+    box-shadow: 0 4px 15px var(--color-glow-dark);
 }
 
 .duelist-button.primary:hover {
-    background-color: var(--color-button-hover);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px var(--color-glow-dark);
+}
+
+.duelist-button.secondary {
+    background-color: var(--color-input-bg);
+    color: var(--color-text-main);
+    border: 2px solid var(--color-border);
+}
+
+.duelist-button.secondary:hover {
+    background-color: var(--color-card-bg);
+    border-color: var(--color-primary);
+}
+
+.button-icon {
+    font-size: 1.2rem;
+}
+
+.refresh-button {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background-color: var(--color-input-bg);
+    border: 2px solid var(--color-border);
+    color: var(--color-text-secondary);
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.2rem;
+}
+
+.refresh-button:hover {
+    background-color: var(--color-primary);
+    color: white;
+    transform: rotate(180deg);
+    border-color: var(--color-primary);
+}
+
+.loading-state-container,
+.error-state-container,
+.empty-state-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 48px;
+    background-color: var(--color-card-bg);
+    border-radius: 12px;
+    border: 2px dashed var(--color-border);
+    text-align: center;
+    margin-top: 32px;
+}
+
+.loading-spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid var(--color-border);
+    border-top-color: var(--color-primary);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin-bottom: 24px;
+}
+
+@keyframes spin {
+    to { transform: rotate(360deg); }
+}
+
+.error-icon {
+    font-size: 3rem;
+    margin-bottom: 24px;
+    color: #dc3545;
+}
+
+.error-message {
+    color: #dc3545;
+    font-size: 1.1rem;
+    margin-bottom: 24px;
+    font-weight: 600;
+}
+
+.empty-icon {
+    font-size: 4rem;
+    margin-bottom: 24px;
+    opacity: 0.5;
+    color: var(--color-text-secondary);
+}
+
+.empty-state-container h3 {
+    font-size: 1.5rem;
+    color: var(--color-text-main);
+    margin-bottom: 8px;
+}
+
+.empty-hint {
+    color: var(--color-text-secondary);
+    font-size: 1rem;
+    margin-bottom: 32px;
+    max-width: 400px;
+}
+
+.empty-state-btn {
+    padding: 16px 32px;
+    font-size: 1rem;
+}
+
+.decks-section {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+}
+
+.deck-grid:not(:empty) {
+    flex: 1;
 }
 
 .deck-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
     gap: 24px;
-    margin-top: 20px;
+    margin-top: 24px;
+    margin-bottom: 40px;
+    min-height: 0;
+    min-width: 0;
 }
 
 .deck-card {
@@ -169,11 +352,16 @@
     border: 2px solid var(--color-border);
     border-radius: 12px;
     padding: 24px;
-    transition: all 0.3s ease;
-    display: flex;
-    flex-direction: column;
+    transition: all 0.3s;
     position: relative;
     overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    min-height: 300px;
+    box-sizing: border-box;
+    animation: fadeInUp 0.3s ease-out;
 }
 
 .deck-card::before {
@@ -186,6 +374,7 @@
     background: linear-gradient(90deg, var(--color-primary), var(--color-button-hover));
     transform: scaleX(0);
     transition: transform 0.3s ease;
+    transform-origin: left;
 }
 
 .deck-card:hover::before {
@@ -194,70 +383,193 @@
 
 .deck-card:hover {
     transform: translateY(-8px);
-    box-shadow: 0 12px 24px rgba(0, 0, 0, 0.15);
+    box-shadow: 0 12px 28px rgba(0, 0, 0, 0.15);
     border-color: var(--color-primary);
 }
 
 .deck-card-header {
-    margin-bottom: 20px;
-    padding-bottom: 15px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
     border-bottom: 1px solid var(--color-border);
 }
 
+.deck-title-wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+}
+
 .deck-name {
-    font-size: 1.4em;
+    font-size: 1.3rem;
     font-weight: 700;
-    color: var(--color-primary);
-    margin: 0 0 8px 0;
+    color: var(--color-text-main);
+    margin: 0;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    flex: 1;
 }
 
-.deck-date {
-    font-size: 0.85em;
+.deck-id {
+    font-size: 0.85rem;
     color: var(--color-text-secondary);
-    font-style: italic;
+    background-color: var(--color-input-bg);
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-weight: 600;
+    margin-left: 8px;
+}
+
+.deck-meta {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 0.85rem;
+    color: var(--color-text-secondary);
+}
+
+.deck-date,
+.deck-total {
+    display: flex;
+    align-items: center;
+    gap: 4px;
 }
 
 .deck-card-stats {
+    flex: 1;
+    margin-bottom: 24px;
+}
+
+.stat-row {
     display: flex;
     flex-direction: column;
-    gap: 12px;
-    margin-bottom: 20px;
-    padding: 16px;
-    background-color: var(--color-input-bg);
-    border-radius: 8px;
+    gap: 16px;
+    margin-bottom: 24px;
 }
 
 .stat-item {
     display: flex;
     align-items: center;
-    gap: 12px;
+    gap: 16px;
+    padding: 16px;
+    background-color: var(--color-input-bg);
+    border-radius: 8px;
+    position: relative;
+    overflow: hidden;
+}
+
+.stat-icon-container {
+    width: 48px;
+    height: 48px;
+    background-color: var(--color-card-bg);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
 }
 
 .stat-icon {
-    font-size: 1.8em;
-    filter: grayscale(0.2);
+    font-size: 1.5rem;
+}
+
+.main-deck-stat .stat-icon {
+    color: var(--color-primary);
+}
+
+.extra-deck-stat .stat-icon {
+    color: #9b59b6;
+}
+
+body.dark-mode .extra-deck-stat .stat-icon {
+    color: #ff6b6b;
 }
 
 .stat-info {
+    flex: 1;
     display: flex;
     flex-direction: column;
-    gap: 2px;
 }
 
 .stat-value {
-    font-size: 1.3em;
-    font-weight: 700;
+    font-size: 1.8rem;
+    font-weight: 800;
     color: var(--color-text-main);
     line-height: 1;
 }
 
 .stat-label {
-    font-size: 0.85em;
+    font-size: 0.9rem;
     color: var(--color-text-secondary);
-    font-weight: 500;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.stat-sub-label {
+    font-size: 0.75rem;
+    color: var(--color-text-secondary);
+    opacity: 0.8;
+    margin-top: 2px;
+}
+
+.stat-progress {
+    width: 100px;
+    height: 6px;
+    background-color: var(--color-border);
+    border-radius: 3px;
+    overflow: hidden;
+    position: absolute;
+    bottom: 16px;
+    right: 16px;
+}
+
+.progress-bar {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.3s ease;
+}
+
+.main-progress {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-button-hover));
+}
+
+.extra-progress {
+    background: linear-gradient(90deg, #9b59b6, #f72585);
+}
+
+body.dark-mode .extra-progress {
+    background: linear-gradient(90deg, #ff6b6b, #ff4757);
+}
+
+.total-progress {
+    background-color: var(--color-input-bg);
+    border-radius: 8px;
+    padding: 16px;
+}
+
+.progress-labels {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
+    font-weight: 600;
+}
+
+.progress-bar-container {
+    height: 8px;
+    background-color: var(--color-border);
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.total-progress-bar {
+    background: linear-gradient(90deg, var(--color-primary), var(--color-button-hover));
+    height: 100%;
 }
 
 .deck-card-actions {
@@ -268,17 +580,27 @@
 
 .action-button {
     flex: 1;
-    padding: 10px 12px;
-    border: none;
-    border-radius: 6px;
-    cursor: pointer;
-    font-weight: 700;
-    font-size: 0.85em;
-    transition: all 0.2s;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 6px;
+    gap: 8px;
+    padding: 12px;
+    border: none;
+    border-radius: 8px;
+    font-size: 0.85rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.action-icon {
+    font-size: 1rem;
+}
+
+.action-text {
+    display: none;
 }
 
 .view-button {
@@ -289,7 +611,7 @@
 .view-button:hover {
     background-color: #218838;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.3);
+    box-shadow: 0 4px 12px rgba(40, 167, 69, 0.3);
 }
 
 .edit-button {
@@ -300,7 +622,7 @@
 .edit-button:hover {
     background-color: #e0a800;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(255, 193, 7, 0.3);
+    box-shadow: 0 4px 12px rgba(255, 193, 7, 0.3);
 }
 
 .delete-button {
@@ -311,56 +633,137 @@
 .delete-button:hover {
     background-color: #c82333;
     transform: translateY(-2px);
-    box-shadow: 0 4px 8px rgba(220, 53, 69, 0.3);
+    box-shadow: 0 4px 12px rgba(220, 53, 69, 0.3);
+}
+
+.dashboard-footer {
+    margin-top: auto;
+    padding: 24px 32px;
+    background-color: var(--color-card-bg);
+    border-top: 2px solid var(--color-border);
+    text-align: center;
+    color: var(--color-text-secondary);
+    font-size: 0.9rem;
+}
+
+@media (max-width: 1200px) {
+    .deck-grid {
+        grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+    }
 }
 
 @media (max-width: 768px) {
     .dashboard-header {
         flex-direction: column;
-        gap: 15px;
-        align-items: flex-start;
+        gap: 16px;
+        align-items: stretch;
+        padding: 16px;
     }
-
+    
+    .header-title-section {
+        text-align: center;
+    }
+    
     .user-controls {
-        width: 100%;
-        justify-content: space-between;
+        justify-content: center;
+        flex-wrap: wrap;
     }
-
-    .decks-header {
+    
+    .user-info {
+        align-items: center;
+        order: 1;
+        width: 100%;
+        margin-bottom: 16px;
+    }
+    
+    .dashboard-main {
+        padding: 16px;
+    }
+    
+    .section-header {
         flex-direction: column;
-        gap: 15px;
+        gap: 16px;
         align-items: stretch;
     }
-
-    .decks-header .duelist-button {
+    
+    .section-actions {
         width: 100%;
+        justify-content: space-between;
     }
     
     .deck-grid {
         grid-template-columns: 1fr;
+        gap: 16px;
+        margin-bottom: 24px;
+    }
+    
+    .deck-card {
+        padding: 16px;
+        min-height: 280px;
     }
     
     .deck-card-actions {
         flex-wrap: wrap;
     }
-
+    
     .action-button {
         flex: 1 1 calc(50% - 4px);
         min-width: 120px;
     }
+    
+    .action-text {
+        display: inline;
+    }
 }
 
 @media (max-width: 480px) {
-    .deck-card {
-        padding: 20px 16px;
-    }
-
     .deck-name {
-        font-size: 1.2em;
+        font-size: 1.1rem;
     }
-
+    
+    .stat-value {
+        font-size: 1.5rem;
+    }
+    
+    .stat-icon-container {
+        width: 40px;
+        height: 40px;
+    }
+    
+    .stat-icon {
+        font-size: 1.2rem;
+    }
+    
     .action-button {
-        font-size: 0.8em;
-        padding: 8px 10px;
+        font-size: 0.8rem;
+        padding: 10px 8px;
     }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+::-webkit-scrollbar {
+    width: 10px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-input-bg);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-primary);
+    border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-button-hover);
 }
