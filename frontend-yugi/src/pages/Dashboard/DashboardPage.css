@@ -194,6 +194,7 @@ body.dark-mode {
     letter-spacing: 0.5px;
     position: relative;
     overflow: hidden;
+    margin: 0;
 }
 
 .duelist-button::before {
@@ -717,6 +718,10 @@ body.dark-mode .extra-progress {
 }
 
 @media (max-width: 480px) {
+    .dashboard-main {
+       width: 92%;
+    }
+
     .deck-name {
         font-size: 1.1rem;
     }
