@@ -1,4 +1,4 @@
-import { DeckService } from '../deck.service';
+import { DeckService } from '../../services/deck.service';
 import prisma from '../../prismaClient';
 
 interface MockPrisma {

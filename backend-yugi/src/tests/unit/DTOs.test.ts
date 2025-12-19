@@ -1,13 +1,12 @@
-import { z } from 'zod';
 import {
     RegisterUserDTO,
     LoginUserDTO,
     DeckSaveDTO,
-} from '../DeckDTO';
+} from '../../dtos/DeckDTO';
 import {
     CardQueryDTO,
     SimplifiedCardSchema,
-} from '../CardDTO';
+} from '../../dtos/CardDTO';
 
 describe('DTOs Validation', () => {
     describe('RegisterUserDTO', () => {

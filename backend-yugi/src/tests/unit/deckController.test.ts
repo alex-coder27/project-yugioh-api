@@ -1,5 +1,5 @@
 import { Request, Response } from 'express';
-import { createDeck, getDecks, getDeckById, updateDeck, deleteDeck } from '../deckController';
+import { createDeck, getDecks, getDeckById, updateDeck, deleteDeck } from '../../controllers/deckController';
 import { DeckService } from '../../services/deck.service';
 import { DeckValidator } from '../../validators/deck.validator';
 import { DeckTransformer } from '../../transformers/deck.transformer';

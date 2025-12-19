@@ -49,9 +49,9 @@ jest.mock('../../middleware/authMiddleware', () => ({
 
 import request from 'supertest';
 import express from 'express';
-import authRoutes from '../authRoutes';
-import cardRoutes from '../cardRoutes';
-import deckRoutes from '../deckRoutes';
+import authRoutes from '../../routes/authRoutes';
+import cardRoutes from '../../routes/cardRoutes';
+import deckRoutes from '../../routes/deckRoutes';
 
 
 const createApp = () => {

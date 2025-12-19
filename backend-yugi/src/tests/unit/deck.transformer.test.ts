@@ -1,4 +1,4 @@
-import { DeckTransformer } from '../deck.transformer';
+import { DeckTransformer } from '../../transformers/deck.transformer';
 
 describe('DeckTransformer', () => {
     describe('processDeck', () => {

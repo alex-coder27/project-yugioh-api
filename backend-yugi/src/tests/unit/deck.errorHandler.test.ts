@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { DeckErrorHandler } from '../deck.errorHandler';
+import { DeckErrorHandler } from '../../handlers/deck.errorHandler';
 
 describe('DeckErrorHandler', () => {
     let mockRes: Partial<Response>;

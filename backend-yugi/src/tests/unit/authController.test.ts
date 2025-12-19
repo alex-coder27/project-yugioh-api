@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
-import { registerUser, loginUser } from '../authController';
+import { registerUser, loginUser } from '../../controllers/authController';
 import prisma from '../../prismaClient';
 import { ZodError } from 'zod';
 

@@ -1,6 +1,6 @@
 import { Request, Response } from 'express';
 import axios from 'axios';
-import { getCards } from '../cardController';
+import { getCards } from '../../controllers/cardController';
 
 jest.mock('axios');
 const mockedAxios = axios as jest.Mocked<typeof axios>;

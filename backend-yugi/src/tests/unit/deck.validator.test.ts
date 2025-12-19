@@ -1,5 +1,5 @@
 import { Response } from 'express';
-import { DeckValidator } from '../deck.validator';
+import { DeckValidator } from '../../validators/deck.validator';
 
 interface TestCard {
     id: number;
