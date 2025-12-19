@@ -23,21 +23,26 @@ interface AuthProviderProps {
 }
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(() => !!localStorage.getItem('token'));
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
     
-    const [user, setUser] = useState<User | null>(() => {
-        const savedUserId = localStorage.getItem('userId');
-        const savedUsername = localStorage.getItem('username');
-        return (savedUserId && savedUsername) ? { userId: Number(savedUserId), username: savedUsername } : null;
-    });
+    const [user, setUser] = useState<User | null>(null);
 
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
         const loadInitialData = () => {
-            if (localStorage.getItem('token') && user) {
+            const token = localStorage.getItem('token');
+            const savedUserId = localStorage.getItem('userId');
+            const savedUsername = localStorage.getItem('username');
+            
+            if (token && savedUserId && savedUsername) {
                 setIsAuthenticated(true);
+                setUser({ 
+                    userId: Number(savedUserId), 
+                    username: savedUsername 
+                });
             } else {
+                // Se não tem todas as informações necessárias, limpa tudo
                 localStorage.removeItem('token');
                 localStorage.removeItem('userId');
                 localStorage.removeItem('username');
@@ -47,7 +52,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             setLoading(false);
         };
         loadInitialData();
-    }, [user]);
+    }, []); // Removi a dependência do user
 
     const login = async (identifier: string, password: string) => {
         const response = await api.post('/auth/login', { identifier, password });

@@ -28,12 +28,14 @@ export class DeckValidator {
             return DeckSaveDTO.parse(body);
         } catch (error) {
             if (error instanceof z.ZodError) {
-                const zodError = error as any;
+                const zodError = error as z.ZodError;
+                const issues = zodError.issues || (zodError as any).errors || [];
+                
                 res.status(400).json({
                     error: 'Dados do deck inválidos.',
-                    details: zodError.errors.map((e: any) => ({
+                    details: issues.map((e: any) => ({
                         path: e.path?.join('.') || '',
-                        message: e.message || ''
+                        message: e.message || e.code || ''
                     }))
                 });
             } else {

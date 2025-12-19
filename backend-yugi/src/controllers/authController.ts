@@ -8,16 +8,17 @@ import { RegisterUserDTO, LoginUserDTO } from '../dtos/DeckDTO';
 const JWT_SECRET = process.env.JWT_SECRET || 'chave_secreta_padrao';
 
 export const registerUser = async (req: Request, res: Response) => {
-
     let validatedData;
     try {
         validatedData = RegisterUserDTO.parse(req.body);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            const zodError = error as any;
             return res.status(400).json({
                 error: 'Dados de registro inválidos.',
-                details: zodError.errors.map((e: any) => ({ field: e.path.join('.'), message: e.message }))
+                details: error.issues.map((e) => ({ 
+                    field: e.path.join('.'), 
+                    message: e.message 
+                }))
             });
         }
         return res.status(500).json({ error: 'Erro interno de validação.' });
@@ -38,7 +39,7 @@ export const registerUser = async (req: Request, res: Response) => {
                 id: true,
                 email: true,
                 username: true,
-            }
+            },
         });
 
         const token = jwt.sign(
@@ -51,9 +52,8 @@ export const registerUser = async (req: Request, res: Response) => {
             message: 'Usuário registrado com sucesso',
             token,
             userId: user.id,
-            username: user.username
+            username: user.username,
         });
-
     } catch (error: any) {
         if (error.code === 'P2002') {
             return res.status(409).json({ error: 'Email ou Nome de Usuário já está em uso.' });
@@ -63,16 +63,17 @@ export const registerUser = async (req: Request, res: Response) => {
 };
 
 export const loginUser = async (req: Request, res: Response) => {
-
     let validatedData;
     try {
         validatedData = LoginUserDTO.parse(req.body);
     } catch (error) {
         if (error instanceof z.ZodError) {
-            const zodError = error as any;
             return res.status(400).json({
                 error: 'Dados de login inválidos.',
-                details: zodError.errors.map((e: any) => ({ field: e.path.join('.'), message: e.message }))
+                details: error.issues.map((e) => ({ 
+                    field: e.path.join('.'), 
+                    message: e.message 
+                }))
             });
         }
         return res.status(500).json({ error: 'Erro interno de validação.' });
@@ -109,10 +110,9 @@ export const loginUser = async (req: Request, res: Response) => {
             message: 'Login bem-sucedido',
             token,
             userId: user.id,
-            username: user.username
+            username: user.username,
         });
-
-    } catch (error: any) {
+    } catch (error) {
         return res.status(500).json({ error: 'Erro interno do servidor durante o login.' });
     }
 };

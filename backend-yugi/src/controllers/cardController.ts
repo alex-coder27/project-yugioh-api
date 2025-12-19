@@ -3,7 +3,6 @@ import axios from 'axios';
 import { z } from 'zod';
 import {
     CardQueryDTO,
-    CardQueryInput,
     SimplifiedCard,
     YgoProDeckResponseSchema
 } from '../dtos/CardDTO';
@@ -26,7 +25,6 @@ const fetchBanlistStatus = async (): Promise<BanlistMap> => {
         });
 
         if (response.status !== 200 || !response.data.data) {
-            console.error('Falha ao buscar banlist da API externa:', response.status);
             return {};
         }
 
@@ -40,104 +38,92 @@ const fetchBanlistStatus = async (): Promise<BanlistMap> => {
 
         return banlistMap;
     } catch (error) {
-        console.error('Erro ao buscar status da banlist:', error);
+        console.error('Erro ao buscar banlist:', error);
         return {};
     }
 };
 
-function getStatValue(stat: number | string | null | undefined): number {
-    if (stat === null || stat === undefined) return 0;
-    if (typeof stat === 'number') return stat;
-    
-    const statStr = String(stat).toUpperCase();
-    if (statStr === 'X') return 9999;
-    if (statStr === '?') return 0;
+const getATKValue = (atk: any): number => {
+    if (typeof atk === 'number') return atk;
+    if (typeof atk === 'string') {
+        const parsed = parseInt(atk, 10);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
+};
 
-    const parsed = parseInt(statStr, 10);
-    return isNaN(parsed) ? 0 : parsed;
-}
-
-function getATKValue(atk: number | string | null | undefined): number {
-    return getStatValue(atk);
-}
-
-function getDEFValue(def: number | string | null | undefined): number {
-    return getStatValue(def);
-}
+const getDEFValue = (def: any): number => {
+    if (typeof def === 'number') return def;
+    if (typeof def === 'string') {
+        const parsed = parseInt(def, 10);
+        return isNaN(parsed) ? 0 : parsed;
+    }
+    return 0;
+};
 
 export const getCards = async (req: Request, res: Response) => {
-    let validatedQuery: CardQueryInput;
-
     try {
-        validatedQuery = CardQueryDTO.parse(req.query);
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            const zodError = error as any;
-            console.error('Erro de validação Zod no Query:', zodError.errors);
+        const queryResult = CardQueryDTO.safeParse(req.query);
+
+        if (!queryResult.success) {
             return res.status(400).json({
                 error: 'Parâmetros de busca inválidos.',
-                details: zodError.errors.map((e: any) => ({ path: e.path.join('.'), message: e.message }))
+                details: queryResult.error.issues.map(issue => ({
+                    path: issue.path.join('.'),
+                    message: issue.message
+                }))
             });
         }
-        return res.status(500).json({ error: 'Erro interno ao validar parâmetros de busca.' });
-    }
 
-    const { fname, type, attribute, race, level, atk, def, offset, num, id } = validatedQuery;
+        const { fname, type, attribute, race, level, atk, def, offset, num, id } = queryResult.data;
 
-    const banlistStatusMap = await fetchBanlistStatus();
+        const banlistMap = await fetchBanlistStatus();
 
-    let apiParams: any = {};
-    let isIdSearch = false;
+        const params: any = {
+            offset,
+            num,
+        };
 
-    if (id) {
-        apiParams = { id: String(id) };
-        isIdSearch = true;
-    } else {
-        apiParams = { fname, type, attribute, race, level, atk, def, offset, num };
-        
-        Object.keys(apiParams).forEach(key => {
-            if (apiParams[key] === undefined || apiParams[key] === '') {
-                delete apiParams[key];
-            }
-        });
-    }
+        if (fname) params.fname = fname;
+        if (id) params.id = id;
+        if (type) params.type = type;
+        if (attribute) params.attribute = attribute;
+        if (race) params.race = race;
+        if (level) params.level = level;
 
-    try {
-        const response = await axios.get(YGO_API_URL, {
-            params: apiParams,
-            validateStatus: () => true
+        const response = await axios.get(YGO_API_URL, { 
+            params,
+            validateStatus: (status) => status < 500
         });
 
-        if (response.status === 400 || response.status === 404) {
+        if (response.status === 404) {
             return res.status(200).json([]);
         }
-        
-        if (response.status !== 200 || !response.data.data) {
-            console.error('Falha ao buscar cartas da API externa:', response.status);
+
+        if (response.status !== 200) {
             return res.status(502).json({ error: 'Falha ao comunicar com a API externa.' });
         }
 
-        const data = YgoProDeckResponseSchema.parse(response.data).data;
+        const apiData = YgoProDeckResponseSchema.safeParse(response.data);
 
-        const meshedCards = data.map((card: any) => {
-            const banStatus = banlistStatusMap[card.name];
-            const correctBanlistInfo = banStatus ? { ban_tcg: banStatus } : card.banlist_info;
-
-            return {
-                ...card,
-                banlist_info: correctBanlistInfo,
-            } as SimplifiedCard;
-        });
-
-        let filteredCards = meshedCards;
-        
-        if (isIdSearch) {
-            const requestedIds = String(id).split(',').map(s => parseInt(s.trim())).filter(n => !isNaN(n));
-            
-            filteredCards = meshedCards.filter(card => requestedIds.includes(card.id));
-
-            return res.json(filteredCards);
+        if (!apiData.success) {
+            console.error('Erro ao validar dados da API externa:', apiData.error);
+            return res.status(502).json({ error: 'Dados recebidos da API externa são inválidos.' });
         }
+
+        let filteredCards: SimplifiedCard[] = apiData.data.data.map(card => {
+            const banStatus = banlistMap[card.name];
+            if (banStatus) {
+                return {
+                    ...card,
+                    banlist_info: {
+                        ...card.banlist_info,
+                        ban_tcg: banStatus
+                    }
+                };
+            }
+            return card;
+        });
 
         if (atk) {
             if (atk === 'asc') {
@@ -186,6 +172,15 @@ export const getCards = async (req: Request, res: Response) => {
         return res.json(filteredCards);
 
     } catch (error) {
+        if (error instanceof z.ZodError) {
+            return res.status(400).json({
+                error: 'Parâmetros de busca inválidos.',
+                details: error.issues.map(e => ({
+                    path: e.path.join('.'),
+                    message: e.message
+                }))
+            });
+        }
         console.error('Erro interno ao buscar cartas:', error);
         return res.status(500).json({ error: 'Erro interno do servidor ao processar a busca de cartas.' });
     }
