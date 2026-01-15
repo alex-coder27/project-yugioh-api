@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import DeckCardGrid from '../DeckCardGrid';
-import type { DeckCardItem } from '../utils';
+import DeckCardGrid from '../../components/deck-builder/DeckCardGrid';
+import type { DeckCardItem } from '../../components/deck-builder/utils';
 
 const mockMainDeckCards: DeckCardItem[] = [
     {

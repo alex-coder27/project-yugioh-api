@@ -18,13 +18,13 @@ const SimpleMock = ({ variant = 'inline' }: { variant?: string }) => {
   );
 };
 
-jest.mock('../ThemeToggleButton', () => ({
+jest.mock('../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
   __esModule: true,
   default: SimpleMock,
 }));
 
-import ThemeToggleButton from '../ThemeToggleButton';
-import { ThemeProvider } from '../../../../hooks/useTheme';
+import ThemeToggleButton from '../../components/shared/ThemeToggleButton/ThemeToggleButton';
+import { ThemeProvider } from '../../hooks/useTheme';
 
 const renderWithProvider = (component: React.ReactElement) => {
   return render(<ThemeProvider>{component}</ThemeProvider>);

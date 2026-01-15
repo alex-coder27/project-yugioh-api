@@ -1,14 +1,14 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
-import ViewDeckPage from '../ViewDeckPage';
-import { ThemeProvider } from '../../../hooks/useTheme';
-import api from '../../../services/api';
+import ViewDeckPage from '../../components/deck/ViewDeckPage';
+import { ThemeProvider } from '../../hooks/useTheme';
+import api from '../../services/api';
 
-jest.mock('../../../services/api');
+jest.mock('../../services/api');
 const mockedApi = api as jest.Mocked<typeof api>;
 
-jest.mock('../../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
+jest.mock('../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
     __esModule: true,
     default: () => <div data-testid="theme-toggle">Theme Toggle</div>,
 }));

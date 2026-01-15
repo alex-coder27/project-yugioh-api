@@ -1,7 +1,7 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import CardDetailsPanel from '../CardDetailsPanel';
-import type { Card } from '../utils';
+import CardDetailsPanel from '../../components/deck-builder/CardDetailsPanel';
+import type { Card } from '../../components/deck-builder/utils';
 
 const mockCard: Card = {
     id: 12345,

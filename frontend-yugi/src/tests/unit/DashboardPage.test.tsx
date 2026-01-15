@@ -1,17 +1,17 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
 import { BrowserRouter } from 'react-router-dom';
-import DashboardPage from '../DashboardPage';
-import { AuthProvider } from '../../../hooks/useAuth';
-import { ThemeProvider } from '../../../hooks/useTheme';
-import api from '../../../services/api';
+import DashboardPage from '../../pages/Dashboard/DashboardPage';
+import { AuthProvider } from '../../hooks/useAuth';
+import { ThemeProvider } from '../../hooks/useTheme';
+import api from '../../services/api';
 
-jest.mock('../../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
+jest.mock('../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
     __esModule: true,
     default: () => <div data-testid="theme-toggle-button">Theme Toggle</div>,
 }));
 
-jest.mock('../../../services/api');
+jest.mock('../../services/api');
 const mockedApi = api as jest.Mocked<typeof api>;
 
 const mockNavigate = jest.fn();
@@ -67,13 +67,11 @@ describe('DashboardPage Component', () => {
     beforeEach(() => {
         jest.clearAllMocks();
         mockNavigate.mockClear();
-        // Mock console.error para evitar poluição no console durante os testes
         consoleErrorSpy = jest.spyOn(console, 'error').mockImplementation(() => { });
     });
 
     afterEach(() => {
         localStorage.clear();
-        // Restaurar console.error após cada teste
         consoleErrorSpy.mockRestore();
     });
 

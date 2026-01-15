@@ -3,7 +3,7 @@ import bcrypt from 'bcrypt';
 import jwt from 'jsonwebtoken';
 import prisma from '../prismaClient';
 import { z } from 'zod';
-import { RegisterUserDTO, LoginUserDTO } from '../dtos/DeckDTO';
+import { RegisterUserDTO, LoginUserDTO } from '../dtos/AuthDTO';
 
 const JWT_SECRET = process.env.JWT_SECRET || 'chave_secreta_padrao';
 

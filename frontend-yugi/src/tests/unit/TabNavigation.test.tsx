@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import TabNavigation from '../TabNavigation';
+import TabNavigation from '../../components/deck-builder/TabNavigation';
 
 describe('TabNavigation Component', () => {
     const mockOnTabChange = jest.fn();

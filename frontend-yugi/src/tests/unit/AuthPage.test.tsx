@@ -1,16 +1,16 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import AuthPage from '../AuthPage';
-import { AuthProvider } from '../../../hooks/useAuth';
-import { ThemeProvider } from '../../../hooks/useTheme';
-import api from '../../../services/api';
+import AuthPage from '../../pages/Auth/AuthPage';
+import { AuthProvider } from '../../hooks/useAuth';
+import { ThemeProvider } from '../../hooks/useTheme';
+import api from '../../services/api';
 
-jest.mock('../../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
+jest.mock('../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
   __esModule: true,
   default: () => <div data-testid="theme-toggle-button">Theme Toggle</div>,
 }));
 
-jest.mock('../../../services/api');
+jest.mock('../../services/api');
 const mockedApi = api as jest.Mocked<typeof api>;
 
 const mockNavigate = jest.fn();

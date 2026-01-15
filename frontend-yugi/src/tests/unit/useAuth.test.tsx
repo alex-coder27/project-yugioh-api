@@ -1,5 +1,5 @@
 import { renderHook, act, waitFor } from '@testing-library/react';
-import { AuthProvider, useAuth } from '../useAuth';
+import { AuthProvider, useAuth } from '../../hooks/useAuth';
 import api from '../../services/api';
 import type { ReactNode } from 'react';
 

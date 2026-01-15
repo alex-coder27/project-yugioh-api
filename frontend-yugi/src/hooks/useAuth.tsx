@@ -1,4 +1,4 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useState, useContext, useEffect, useCallback, useMemo } from 'react';
 import type { ReactNode } from 'react';
 import api from '../services/api';
 
@@ -24,72 +24,65 @@ interface AuthProviderProps {
 
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
-    
     const [user, setUser] = useState<User | null>(null);
-
     const [loading, setLoading] = useState<boolean>(true);
 
     useEffect(() => {
-        const loadInitialData = () => {
-            const token = localStorage.getItem('token');
-            const savedUserId = localStorage.getItem('userId');
-            const savedUsername = localStorage.getItem('username');
-            
-            if (token && savedUserId && savedUsername) {
-                setIsAuthenticated(true);
-                setUser({ 
-                    userId: Number(savedUserId), 
-                    username: savedUsername 
-                });
-            } else {
-                // Se não tem todas as informações necessárias, limpa tudo
-                localStorage.removeItem('token');
-                localStorage.removeItem('userId');
-                localStorage.removeItem('username');
-                setIsAuthenticated(false);
-                setUser(null);
-            }
-            setLoading(false);
-        };
-        loadInitialData();
-    }, []); // Removi a dependência do user
+        const token = localStorage.getItem('token');
+        const savedUserId = localStorage.getItem('userId');
+        const savedUsername = localStorage.getItem('username');
+        
+        if (token && savedUserId && savedUsername) {
+            setUser({ 
+                userId: Number(savedUserId), 
+                username: savedUsername 
+            });
+            setIsAuthenticated(true);
+        }
+        setLoading(false);
+    }, []);
 
-    const login = async (identifier: string, password: string) => {
+    const login = useCallback(async (identifier: string, password: string) => {
         const response = await api.post('/auth/login', { identifier, password });
-        
         const { token, userId, username: apiUsername } = response.data;
         
         localStorage.setItem('token', token);
         localStorage.setItem('userId', String(userId));
         localStorage.setItem('username', apiUsername);
         
-        setIsAuthenticated(true);
         setUser({ userId, username: apiUsername });
-    };
+        setIsAuthenticated(true);
+    }, []);
 
-    const register = async (username: string, email: string, password: string) => {
+    const register = useCallback(async (username: string, email: string, password: string) => {
         const response = await api.post('/auth/register', { username, email, password }); 
-        
         const { token, userId, username: apiUsername } = response.data;
         
         localStorage.setItem('token', token);
         localStorage.setItem('userId', String(userId));
         localStorage.setItem('username', apiUsername);
 
-        setIsAuthenticated(true);
         setUser({ userId, username: apiUsername });
-    };
+        setIsAuthenticated(true);
+    }, []);
 
-    const logout = () => {
-        localStorage.removeItem('token');
-        localStorage.removeItem('userId');
-        localStorage.removeItem('username');
+    const logout = useCallback(() => {
+        localStorage.clear();
         setIsAuthenticated(false);
         setUser(null);
-    };
+    }, []);
+
+    const contextValue = useMemo(() => ({
+        isAuthenticated,
+        user,
+        loading,
+        login,
+        register,
+        logout
+    }), [isAuthenticated, user, loading, login, register, logout]);
 
     return (
-        <AuthContext.Provider value={{ isAuthenticated, user, login, register, logout, loading }}>
+        <AuthContext.Provider value={contextValue}>
             {children}
         </AuthContext.Provider>
     );

@@ -1,5 +1,5 @@
 import { renderHook, act } from '@testing-library/react';
-import { ThemeProvider, useTheme } from '../useTheme';
+import { ThemeProvider, useTheme } from '../../hooks/useTheme';
 import type { ReactNode } from 'react';
 
 const wrapper = ({ children }: { children: ReactNode }) => (
@@ -40,17 +40,17 @@ describe('useTheme Hook', () => {
     const { result } = renderHook(() => useTheme(), { wrapper });
 
     act(() => {
-      result.current.toggleTheme(); // light -> dark
+      result.current.toggleTheme();
     });
     expect(result.current.theme).toBe('dark');
 
     act(() => {
-      result.current.toggleTheme(); // dark -> light
+      result.current.toggleTheme();
     });
     expect(result.current.theme).toBe('light');
 
     act(() => {
-      result.current.toggleTheme(); // light -> dark
+      result.current.toggleTheme();
     });
     expect(result.current.theme).toBe('dark');
   });

@@ -1,6 +1,6 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import SearchControls from '../SearchControls';
+import SearchControls from '../../components/deck-builder/SearchControls';
 
 describe('SearchControls Component', () => {
     const mockOnSearchChange = jest.fn();

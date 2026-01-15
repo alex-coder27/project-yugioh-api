@@ -1,8 +1,5 @@
-import {
-    RegisterUserDTO,
-    LoginUserDTO,
-    DeckSaveDTO,
-} from '../../dtos/DeckDTO';
+import { DeckSaveDTO } from '../../dtos/DeckDTO';
+import { RegisterUserDTO, LoginUserDTO } from '../../dtos/AuthDTO';
 import {
     CardQueryDTO,
     SimplifiedCardSchema,

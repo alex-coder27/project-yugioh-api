@@ -1,6 +1,5 @@
 import '@testing-library/jest-dom';
 
-// Configurações básicas necessárias
 Object.defineProperty(window, 'matchMedia', {
   writable: true,
   value: jest.fn().mockImplementation(query => ({
@@ -15,7 +14,6 @@ Object.defineProperty(window, 'matchMedia', {
   })),
 });
 
-// Mock do localStorage
 const localStorageMock = {
   store: {} as Record<string, string>,
   getItem(key: string) {
@@ -68,7 +66,11 @@ beforeAll(() => {
   console.error = (...args: any[]) => {
     if (
       typeof args[0] === 'string' &&
-      args[0].includes('Warning: ReactDOM.render')
+      (
+        args[0].includes('Warning: ReactDOM.render') ||
+        args[0].includes('Erro ao buscar decks') ||
+        args[0].includes('Falha na conexão')
+      )
     ) {
       return;
     }

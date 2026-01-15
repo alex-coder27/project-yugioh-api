@@ -14,8 +14,8 @@ jest.mock('../../prismaClient', () => ({
     },
 }));
 
-jest.mock('../../dtos/DeckDTO', () => {
-    const originalModule = jest.requireActual('../../dtos/DeckDTO');
+jest.mock('../../dtos/AuthDTO', () => {
+    const originalModule = jest.requireActual('../../dtos/AuthDTO');
     return {
         ...originalModule,
         RegisterUserDTO: {
@@ -27,7 +27,7 @@ jest.mock('../../dtos/DeckDTO', () => {
     };
 });
 
-import { RegisterUserDTO, LoginUserDTO } from '../../dtos/DeckDTO';
+import { RegisterUserDTO, LoginUserDTO } from '../../dtos/AuthDTO';
 
 describe('authController', () => {
     let mockReq: Partial<Request>;

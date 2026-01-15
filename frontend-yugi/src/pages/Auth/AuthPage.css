@@ -26,8 +26,8 @@
     
     box-shadow: 
         0 0 15px var(--color-glow-dark), 
-        0 0 30px var(--color-glow-dark), 
-        0 0 60px var(--color-glow-dark);
+        0 0 20px var(--color-glow-dark), 
+        0 0 25px var(--color-glow-dark);
         
     margin: 0;
 }

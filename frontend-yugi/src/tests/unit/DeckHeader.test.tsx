@@ -1,9 +1,9 @@
 import { render, screen, fireEvent } from '@testing-library/react';
 import '@testing-library/jest-dom';
-import DeckHeader from '../DeckHeader';
-import { ThemeProvider } from '../../../hooks/useTheme';
+import DeckHeader from '../../components/deck-builder/DeckHeader';
+import { ThemeProvider } from '../../hooks/useTheme';
 
-jest.mock('../../shared/ThemeToggleButton/ThemeToggleButton', () => ({
+jest.mock('../../components/shared/ThemeToggleButton/ThemeToggleButton', () => ({
     __esModule: true,
     default: () => <div data-testid="theme-toggle">Theme Toggle</div>,
 }));

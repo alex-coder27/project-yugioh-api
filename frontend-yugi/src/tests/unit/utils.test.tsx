@@ -7,8 +7,8 @@ import {
     MIN_MAIN_DECK,
     MAX_EXTRA_DECK,
     PAGE_SIZE,
-} from '../utils';
-import type { Card } from '../utils';
+} from '../../components/deck-builder/utils';
+import type { Card } from '../../components/deck-builder/utils';
 
 describe('Utils Functions', () => {
     describe('isExtraDeckCard', () => {
